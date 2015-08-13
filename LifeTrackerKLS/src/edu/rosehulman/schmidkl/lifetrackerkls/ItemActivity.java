@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.provider.CalendarContract.Attendees;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -69,8 +70,9 @@ public class ItemActivity extends ListActivity {
 
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
-		// TODO: Dialog w/ data;
 		super.onListItemClick(l, v, position, id);
+		mSelectedID = id;
+		itemAttributeSummaryDialog();
 	}
 
 	@Override
@@ -157,6 +159,7 @@ public class ItemActivity extends ListActivity {
 								Item item = new Item(mListID);
 								item.setName(name);
 								addItem(item);
+								mSelectedID = item.getID();
 								attributesDialog(item);
 								dismiss();
 							}
@@ -262,7 +265,7 @@ public class ItemActivity extends ListActivity {
 
 	private void editItem(Item item) {
 		if (mSelectedID == NO_ID_SELECTED) {
-			Log.e(MainActivity.LT, "Attempt to update with no list selected.");
+			Log.e(MainActivity.LT, "Attempt to update with no item selected.");
 		}
 		item.setID(mSelectedID);
 		mItemDataAdapter.updateItem(item);
@@ -300,16 +303,26 @@ public class ItemActivity extends ListActivity {
 						descriptionEditText, priceEditText, quantityEditText,
 						locationEditText, weblinkEditText };
 
-				// final Button priorityButton = (Button)
-				// view.findViewById(R.id.priorityButton);
-				// final Button reminderButton = (Button)
-				// view.findViewById(R.id.reminderButton);
-				// final Button imageButton = (Button)
-				// view.findViewById(R.id.imageButton);
-				// final Button voiceButton = (Button)
-				// view.findViewById(R.id.voiceButton);
+				String[] attributeArray = new String[] { item.getDescription(),
+						item.getPrice(), item.getQuantity(),
+						item.getLocation(), item.getWebLink() };
+				
+				for (int j = 0; j < editTextArray.length; j++) {
+					if (attributeArray[j] != null) {
+						editTextArray[j].setText(attributeArray[j]);
+					}
+				}
 
-				// TODO: Auto-populate with stuff from Database if it exists
+//				final Button priorityButton = (Button) view
+//						.findViewById(R.id.priorityButton);
+//				final Button reminderButton = (Button) view
+//						.findViewById(R.id.reminderButton);
+//				final Button imageButton = (Button) view
+//						.findViewById(R.id.imageButton);
+//				final Button voiceButton = (Button) view
+//						.findViewById(R.id.voiceButton);
+
+				// TODO: button stuff
 
 				builder.setNegativeButton(android.R.string.cancel,
 						new DialogInterface.OnClickListener() {
@@ -326,26 +339,26 @@ public class ItemActivity extends ListActivity {
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which) {
-								// TODO: Add to Database stuff
-								
 								String attribute;
 								String[] attributes = new String[5];
-								
+
 								for (int i = 0; i < editTextArray.length; i++) {
-									if(editTextArray[i].getText().toString() == null || editTextArray[i].getText().toString() == "") {
+									if (editTextArray[i].getText().toString() == null
+											|| editTextArray[i].getText()
+													.toString() == "") {
 										attribute = null;
 									} else {
-										attribute= editTextArray[i].getText().toString();
+										attribute = editTextArray[i].getText()
+												.toString();
 									}
 									attributes[i] = attribute;
 								}
-								
 								item.setDescription(attributes[0]);
 								item.setPrice(attributes[1]);
 								item.setQuantity(attributes[2]);
 								item.setLocation(attributes[3]);
 								item.setWebLink(attributes[4]);
-								
+								editItem(item);
 								dismiss();
 							}
 						});
@@ -353,5 +366,32 @@ public class ItemActivity extends ListActivity {
 			}
 		};
 		dialogFragment.show(getFragmentManager(), null);
+	}
+	private void itemAttributeSummaryDialog() {
+		// TODO: Finish Summary Dialog	xml & Add in TextView code
+		DialogFragment dialogFragment = new DialogFragment() {
+			@Override
+			public Dialog onCreateDialog(Bundle savedInstanceState) {
+				AlertDialog.Builder builder = new AlertDialog.Builder(
+						getActivity());
+				// Inflate View
+				LayoutInflater inflater = getActivity().getLayoutInflater();
+				View view = inflater.inflate(R.layout.dialog_attribute_summary, null);
+				builder.setView(view);
+				
+				builder.setNeutralButton(R.string.edit,
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								attributesDialog(getItem(mSelectedID));
+								dismiss();
+							}
+						});
+				return builder.create();
+			}
+		};
+		dialogFragment.show(getFragmentManager(), null);	
 	}
 }

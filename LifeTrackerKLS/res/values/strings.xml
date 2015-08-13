@@ -14,7 +14,7 @@
     <string name="delete_list">Delete List</string>
     <string name="delete_list_certainty">Are you sure you would like to delete this list?</string>
     <string name="edit_list_message">Please enter a new name for your Llist</string>
-    <string name="blank"> </string>
+    <string name="blank"></string>
     <string name="add_item">Add Item</string>
     <string name="edit_item">Edit Item</string>
     <string name="delete_item">Delete Item</string>
@@ -32,5 +32,8 @@
     <string name="attribute_reminder">Reminder</string>
     <string name="attribute_image">Image</string>
     <string name="attribute_voice">Voice</string>
+    <string name="attribute_priority_colon">Priority:</string>
+    <string name="attribute_reminder_colon">Reminder:</string>
+    <string name="edit">Edit</string>
 
 </resources>
