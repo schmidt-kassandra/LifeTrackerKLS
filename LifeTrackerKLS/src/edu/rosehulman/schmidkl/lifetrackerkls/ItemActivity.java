@@ -5,8 +5,10 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ListActivity;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -15,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
@@ -28,9 +31,11 @@ public class ItemActivity extends ListActivity{
 	/**
 	 * Index of the row selected
 	 */
-	private long mSelectedId = NO_ID_SELECTED;
+	private long mSelectedID = NO_ID_SELECTED;
 	
 	public static final String KEY_LIST_ID = "KEY_LIST_ID";
+	
+	private static long mListID;
 
 	private ItemAdapter mItemDataAdapter;
 	private SimpleCursorAdapter mCursorAdapter;
@@ -38,12 +43,16 @@ public class ItemActivity extends ListActivity{
 	private static final int mGroupNumber = 0;
 	
 	private static final int mEditItemID = 1;
-	private static final int mDeleteItemID = 1;
+	private static final int mDeleteItemID = 2;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_item_list);
+		
+		Intent data = getIntent();
+		
+		mListID = data.getLongExtra(MainActivity.KEY_LIST_ID, 0);
 		
 		mItemDataAdapter = new ItemAdapter(this);
 		mItemDataAdapter.open();
@@ -55,6 +64,12 @@ public class ItemActivity extends ListActivity{
 				cursor, fromColumns, toTextViews, 0);
 		this.setListAdapter(mCursorAdapter);
 		registerForContextMenu(getListView());
+	}
+	
+	@Override
+	protected void onListItemClick(ListView l, View v, int position, long id) {
+		// TODO: Dialog w/ data; 
+		super.onListItemClick(l, v, position, id);
 	}
 	
 	@Override
@@ -91,14 +106,14 @@ public class ItemActivity extends ListActivity{
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
 				.getMenuInfo();
-		mSelectedId = info.id;
+		mSelectedID = info.id;
 
 		int id = item.getItemId();
 		if (id == mEditItemID) {
-			//TODO:
+			editItemDialog();
 			return true;
 		} else if (id == mDeleteItemID) {
-			//TODO:
+			deleteItemDialog();
 			return true;
 		}
 		return super.onContextItemSelected(item);
@@ -136,11 +151,93 @@ public class ItemActivity extends ListActivity{
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which) {
-								//TODO: Finish
+								//TODO: Properties Dialog
 								String name = nameEditText.getText().toString();
-								Item item = new Item();
+								Item item = new Item(mListID);
 								item.setName(name);
 								addItem(item);
+								dismiss();
+							}
+						});
+				return builder.create();
+			}
+		};
+		dialogFragment.show(getFragmentManager(), null);
+	}
+	
+	private void editItemDialog() {
+		DialogFragment dialogFragment = new DialogFragment() {
+			@Override
+			public Dialog onCreateDialog(Bundle savedInstanceState) {
+				AlertDialog.Builder builder = new AlertDialog.Builder(
+						getActivity());
+				// Inflate View
+				LayoutInflater inflater = getActivity().getLayoutInflater();
+				View view = inflater.inflate(R.layout.dialog_name, null);
+				builder.setView(view);
+				
+				TextView nameTextView = (TextView) view.findViewById(R.id.nameTextView);
+				nameTextView.setText(R.string.edit_item_message);
+				
+				final Item item = getItem(mSelectedID);
+
+				final EditText nameEditText = (EditText) view
+						.findViewById(R.id.nameEditText);
+				
+				nameEditText.setText(item.getName());
+
+				builder.setNegativeButton(android.R.string.cancel,
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								dismiss();
+							}
+						});
+				builder.setPositiveButton(android.R.string.ok,
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								String newName = nameEditText.getText().toString();
+								item.setName(newName);
+								editItem(item);
+								dismiss();
+							}
+						});
+				return builder.create();
+			}
+		};
+		dialogFragment.show(getFragmentManager(), null);
+	}
+	
+	private void deleteItemDialog() {
+		DialogFragment dialogFragment = new DialogFragment() {
+			@Override
+			public Dialog onCreateDialog(Bundle savedInstanceState) {
+				AlertDialog.Builder builder = new AlertDialog.Builder(
+						getActivity());
+				builder.setTitle(R.string.delete_item);
+				builder.setMessage(R.string.delete_item_certainty);
+
+				builder.setNegativeButton(android.R.string.cancel,
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								dismiss();
+							}
+						});
+				builder.setPositiveButton(android.R.string.ok,
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								removeItem(mSelectedID);
 								dismiss();
 							}
 						});
@@ -155,8 +252,21 @@ public class ItemActivity extends ListActivity{
 		mCursorAdapter.changeCursor(mItemDataAdapter.getItemsCursor());
 	}
 	
+	private Item getItem(long ID) {
+		return mItemDataAdapter.getItem(ID);
+	}
 	
+	private void editItem(Item item) {
+		if (mSelectedID == NO_ID_SELECTED) {
+			Log.e(MainActivity.LT, "Attempt to update with no list selected.");
+		}
+		item.setID(mSelectedID);
+		mItemDataAdapter.updateItem(item);
+		mCursorAdapter.changeCursor(mItemDataAdapter.getItemsCursor());
+	}
 	
-	
-	
+	private void removeItem(long ID) {
+		mItemDataAdapter.removeItem(ID);
+		mCursorAdapter.changeCursor(mItemDataAdapter.getItemsCursor());
+	}
 }

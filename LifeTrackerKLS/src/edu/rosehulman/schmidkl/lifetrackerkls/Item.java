@@ -2,19 +2,28 @@ package edu.rosehulman.schmidkl.lifetrackerkls;
 
 public class Item {
 	
+	private long mListID;
 	private String mName;
-	private long mId;
+	private long mID;
 	
 	public Item() {
 		//Empty
 	}
-
-	public long getId() {
-		return mId;
+	
+	public Item(long listID) {
+		mListID = listID;
+	}
+	
+	public long getListID() {
+		return mListID;
 	}
 
-	public void setId(long id) {
-		this.mId = id;
+	public long getID() {
+		return mID;
+	}
+
+	public void setID(long ID) {
+		this.mID = ID;
 	}
 
 	public String getName() {
@@ -24,5 +33,4 @@ public class Item {
 	public void setName(String name) {
 		mName = name;
 	}
-
 }

@@ -58,7 +58,7 @@ public class ListAdapter {
 	public long addList(List list) {
 		ContentValues row = getContentValuesFromList(list);
 		long newID = mDatabase.insert(TABLE_NAME, null, row);
-		list.setId(newID);
+		list.setID(newID);
 		return newID;
 	}
 
@@ -68,9 +68,9 @@ public class ListAdapter {
 		return row;
 	}
 
-	public List getList(long id) {
+	public List getList(long ID) {
 		String[] projection = new String[] { KEY_ID, KEY_LIST_NAME };
-		String selection = KEY_ID + "=" + id;
+		String selection = KEY_ID + "=" + ID;
 		Cursor cursor = mDatabase.query(TABLE_NAME, projection, selection,
 				null, null, null, null);
 		if (cursor != null && cursor.moveToFirst()) {
@@ -81,7 +81,7 @@ public class ListAdapter {
 
 	private List getListFromCursor(Cursor cursor) {
 		List list = new List();
-		list.setId(cursor.getLong(cursor.getColumnIndexOrThrow(KEY_ID)));
+		list.setID(cursor.getLong(cursor.getColumnIndexOrThrow(KEY_ID)));
 		list.setName(cursor.getString(cursor
 				.getColumnIndexOrThrow(KEY_LIST_NAME)));
 		return list;
@@ -89,12 +89,12 @@ public class ListAdapter {
 
 	public void updateList(List list) {
 		ContentValues row = getContentValuesFromList(list);
-		String whereClause = KEY_ID + "=" + list.getId();
+		String whereClause = KEY_ID + "=" + list.getID();
 		mDatabase.update(TABLE_NAME, row, whereClause, null);
 	}
 
-	public boolean removeList(long id) {
-		String whereClause = KEY_ID + "=" + id;
+	public boolean removeList(long ID) {
+		String whereClause = KEY_ID + "=" + ID;
 		return mDatabase.delete(TABLE_NAME, whereClause, null) > 0;
 	}
 
@@ -117,5 +117,4 @@ public class ListAdapter {
 			onCreate(db);
 		}
 	}
-
 }

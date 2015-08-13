@@ -60,7 +60,7 @@ public class ItemAdapter {
 	public long addItem(Item item) {
 		ContentValues row = getContentValuesFromItem(item);
 		long newID = mDatabase.insert(TABLE_NAME, null, row);
-		item.setId(newID);
+		item.setID(newID);
 		return newID;
 	}
 
@@ -70,9 +70,9 @@ public class ItemAdapter {
 		return row;
 	}
 
-	public Item getItem(long id) {
+	public Item getItem(long ID) {
 		String[] projection = new String[] { KEY_ID, KEY_ITEM };
-		String selection = KEY_ID + "=" + id;
+		String selection = KEY_ID + "=" + ID;
 		Cursor cursor = mDatabase.query(TABLE_NAME, projection, selection,
 				null, null, null, null);
 		if (cursor != null && cursor.moveToFirst()) {
@@ -83,7 +83,7 @@ public class ItemAdapter {
 
 	private Item getItemFromCursor(Cursor cursor) {
 		Item item = new Item();
-		item.setId(cursor.getLong(cursor.getColumnIndexOrThrow(KEY_ID)));
+		item.setID(cursor.getLong(cursor.getColumnIndexOrThrow(KEY_ID)));
 		item.setName(cursor.getString(cursor
 				.getColumnIndexOrThrow(KEY_ITEM)));
 		return item;
@@ -91,12 +91,12 @@ public class ItemAdapter {
 
 	public void updateItem(Item item) {
 		ContentValues row = getContentValuesFromItem(item);
-		String whereClause = KEY_ID + "=" + item.getId();
+		String whereClause = KEY_ID + "=" + item.getID();
 		mDatabase.update(TABLE_NAME, row, whereClause, null);
 	}
 
-	public boolean removeList(long id) {
-		String whereClause = KEY_ID + "=" + id;
+	public boolean removeItem(long ID) {
+		String whereClause = KEY_ID + "=" + ID;
 		return mDatabase.delete(TABLE_NAME, whereClause, null) > 0;
 	}
 

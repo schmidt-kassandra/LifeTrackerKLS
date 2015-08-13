@@ -3,18 +3,18 @@ package edu.rosehulman.schmidkl.lifetrackerkls;
 public class List {
 	
 	private String mName;
-	private long mId;
+	private long mID;
 	
 	public List() {
 		//Empty
 	}
 
-	public long getId() {
-		return mId;
+	public long getID() {
+		return mID;
 	}
 
-	public void setId(long id) {
-		this.mId = id;
+	public void setID(long ID) {
+		this.mID = ID;
 	}
 
 	public String getName() {

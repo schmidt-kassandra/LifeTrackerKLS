@@ -32,7 +32,7 @@ public class MainActivity extends ListActivity {
 	/**
 	 * Index of the row selected
 	 */
-	private long mSelectedId = NO_ID_SELECTED;
+	private long mSelectedID = NO_ID_SELECTED;
 	
 	public static final String KEY_LIST_ID = "KEY_LIST_ID";
 
@@ -63,9 +63,9 @@ public class MainActivity extends ListActivity {
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
-		mSelectedId = id;		
+		mSelectedID = id;		
 		Intent itemIntent = new Intent(this, ItemActivity.class);
-		itemIntent.putExtra(KEY_LIST_ID, mSelectedId);
+		itemIntent.putExtra(KEY_LIST_ID, mSelectedID);
 		this.startActivity(itemIntent);
 	}
 
@@ -107,7 +107,7 @@ public class MainActivity extends ListActivity {
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
 				.getMenuInfo();
-		mSelectedId = info.id;
+		mSelectedID = info.id;
 
 		int id = item.getItemId();
 		if (id == mEditListID) {
@@ -180,7 +180,7 @@ public class MainActivity extends ListActivity {
 				TextView nameTextView = (TextView) view.findViewById(R.id.nameTextView);
 				nameTextView.setText(R.string.edit_list_message);
 				
-				final List list = getList(mSelectedId);
+				final List list = getList(mSelectedID);
 
 				final EditText nameEditText = (EditText) view
 						.findViewById(R.id.nameEditText);
@@ -202,6 +202,8 @@ public class MainActivity extends ListActivity {
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which) {
+								String newName = nameEditText.getText().toString();
+								list.setName(newName);
 								editList(list);
 								dismiss();
 							}
@@ -236,7 +238,7 @@ public class MainActivity extends ListActivity {
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which) {
-								removeList(mSelectedId);
+								removeList(mSelectedID);
 								dismiss();
 							}
 						});
@@ -251,21 +253,21 @@ public class MainActivity extends ListActivity {
 		mCursorAdapter.changeCursor(mListDataAdapter.getListsCursor());
 	}
 
-	private List getList(long id) {
-		return mListDataAdapter.getList(id);
+	private List getList(long ID) {
+		return mListDataAdapter.getList(ID);
 	}
 
 	private void editList(List list) {
-		if (mSelectedId == NO_ID_SELECTED) {
+		if (mSelectedID == NO_ID_SELECTED) {
 			Log.e(LT, "Attempt to update with no list selected.");
 		}
-		list.setId(mSelectedId);
+		list.setID(mSelectedID);
 		mListDataAdapter.updateList(list);
 		mCursorAdapter.changeCursor(mListDataAdapter.getListsCursor());
 	}
 
-	private void removeList(long id) {
-		mListDataAdapter.removeList(id);
+	private void removeList(long ID) {
+		mListDataAdapter.removeList(ID);
 		mCursorAdapter.changeCursor(mListDataAdapter.getListsCursor());
 	}
 }
