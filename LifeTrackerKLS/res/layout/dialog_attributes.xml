@@ -1,0 +1,137 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" xmlns:tools="http://schemas.android.com/tools"><EditText
+        android:id="@+id/descriptionEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:ems="10"
+        android:inputType="none"
+        tools:ignore="RtlHardcoded" />
+
+    <EditText
+        android:id="@+id/priceEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/descriptionEditText"
+        android:ems="10"
+        android:inputType="none"
+        tools:ignore="RtlHardcoded" />
+
+    <EditText
+        android:id="@+id/quantityEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/priceEditText"
+        android:ems="10"
+        android:inputType="none"
+        tools:ignore="RtlHardcoded" />
+
+    <TextView
+        android:id="@+id/priceTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/priceEditText"
+        android:layout_alignParentLeft="true"
+        android:text="@string/attribute_price_colon"
+        android:textSize="24sp"
+        tools:ignore="RtlHardcoded" />
+
+    <TextView
+        android:id="@+id/quantityTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/quantityEditText"
+        android:layout_alignParentLeft="true"
+        android:text="@string/attribute_quantity_colon"
+        android:textSize="24sp"
+        tools:ignore="RtlHardcoded" />
+
+    <EditText
+        android:id="@+id/locationEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/quantityEditText"
+        android:ems="10"
+        android:inputType="none"
+        tools:ignore="RtlHardcoded" />
+
+    <TextView
+        android:id="@+id/locationTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/locationEditText"
+        android:layout_alignParentLeft="true"
+        android:text="@string/attribute_location_colon"
+        android:textSize="24sp"
+        tools:ignore="RtlHardcoded" />
+
+    <TextView
+        android:id="@+id/descriptionTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/priceEditText"
+        android:layout_alignParentLeft="true"
+        android:text="@string/attribute_description_colon"
+        android:textSize="24sp"
+        tools:ignore="RtlHardcoded" />
+
+    <EditText
+        android:id="@+id/weblinkEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/locationEditText"
+        android:ems="10"
+        android:inputType="none"
+        tools:ignore="RtlHardcoded" />
+
+    <TextView
+        android:id="@+id/weblinkTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/weblinkEditText"
+        android:layout_alignParentLeft="true"
+        android:text="@string/attribute_weblink_colon"
+        android:textSize="24sp"
+        tools:ignore="RtlHardcoded" />
+
+    <Button
+        android:id="@+id/reminderButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/priorityButton"
+        android:layout_centerHorizontal="true"
+        android:text="@string/attribute_reminder" />
+
+    <Button
+        android:id="@+id/imageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/reminderButton"
+        android:layout_centerHorizontal="true"
+        android:text="@string/attribute_image" />
+
+    <Button
+        android:id="@+id/voiceButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imageButton"
+        android:layout_centerHorizontal="true"
+        android:text="@string/attribute_voice" />
+
+    <Button
+        android:id="@+id/priorityButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/imageButton"
+        android:layout_below="@+id/weblinkEditText"
+        android:layout_marginTop="16dp"
+        android:text="@string/attribute_priority"
+        tools:ignore="RtlHardcoded" />
+
+</RelativeLayout>

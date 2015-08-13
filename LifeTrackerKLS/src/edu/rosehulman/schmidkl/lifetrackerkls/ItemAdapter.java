@@ -8,8 +8,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 public class ItemAdapter {
-	//TODO: Make it so items are unique to their lists
-	
 	// Becomes the filename of the database
 	private static final String DATABASE_NAME = "items.db";
 	// Only one table in this database
@@ -21,6 +19,12 @@ public class ItemAdapter {
 	public static final String KEY_ID = "_id"; // Android naming convention for
 												// IDs
 	public static final String KEY_ITEM = "item";
+	public static final String KEY_LIST_ID = "listID";
+	public static final String KEY_DESCRIPTION = "description";
+	public static final String KEY_PRICE = "price";
+	public static final String KEY_QUANTITY = "quantity";
+	public static final String KEY_LOCATION = "location";
+	public static final String KEY_WEBLINK = "weblink";
 	private static final String DROP_STATEMENT = "DROP TABLE IF EXISTS "
 			+ TABLE_NAME;
 	private static final String CREATE_STATEMENT;
@@ -28,7 +32,13 @@ public class ItemAdapter {
 		StringBuilder sb = new StringBuilder();
 		sb.append("CREATE TABLE " + TABLE_NAME + " (");
 		sb.append(KEY_ID + " integer primary key autoincrement, ");
-		sb.append(KEY_ITEM + " text");
+		sb.append(KEY_ITEM + " text, ");
+		sb.append(KEY_LIST_ID + " integer, ");
+		sb.append(KEY_DESCRIPTION + " text, ");
+		sb.append(KEY_PRICE + " text, ");
+		sb.append(KEY_QUANTITY + " text, ");
+		sb.append(KEY_LOCATION + " text, ");
+		sb.append(KEY_WEBLINK + " text");
 		sb.append(")");
 		CREATE_STATEMENT = sb.toString();
 	}
@@ -51,9 +61,12 @@ public class ItemAdapter {
 		mDatabase.close();
 	}
 
-	public Cursor getItemsCursor() {
-		String[] projection = new String[] { KEY_ID, KEY_ITEM };
-		return mDatabase.query(TABLE_NAME, projection, null, null, null, null,
+	public Cursor getItemsCursor(long listID) {
+		String[] projection = new String[] { KEY_ID, KEY_ITEM, KEY_LIST_ID,
+				KEY_DESCRIPTION, KEY_PRICE, KEY_QUANTITY, KEY_LOCATION,
+				KEY_WEBLINK };
+		String selection = KEY_LIST_ID + "=" + listID;
+		return mDatabase.query(TABLE_NAME, projection, selection, null, null, null,
 				KEY_ITEM + " ASC");
 	}
 
@@ -67,11 +80,19 @@ public class ItemAdapter {
 	private ContentValues getContentValuesFromItem(Item item) {
 		ContentValues row = new ContentValues();
 		row.put(KEY_ITEM, item.getName());
+		row.put(KEY_LIST_ID, item.getListID());
+		row.put(KEY_DESCRIPTION, item.getDescription());
+		row.put(KEY_PRICE, item.getPrice());
+		row.put(KEY_QUANTITY, item.getQuantity());
+		row.put(KEY_LOCATION, item.getLocation());
+		row.put(KEY_WEBLINK, item.getWebLink());
 		return row;
 	}
 
 	public Item getItem(long ID) {
-		String[] projection = new String[] { KEY_ID, KEY_ITEM };
+		String[] projection = new String[] { KEY_ID, KEY_ITEM, KEY_LIST_ID,
+				KEY_DESCRIPTION, KEY_PRICE, KEY_QUANTITY, KEY_LOCATION,
+				KEY_WEBLINK };
 		String selection = KEY_ID + "=" + ID;
 		Cursor cursor = mDatabase.query(TABLE_NAME, projection, selection,
 				null, null, null, null);
@@ -81,11 +102,15 @@ public class ItemAdapter {
 		return null;
 	}
 
-	private Item getItemFromCursor(Cursor cursor) {
-		Item item = new Item();
+	private Item getItemFromCursor(Cursor cursor) {	
+		Item item = new Item(cursor.getLong(cursor.getColumnIndexOrThrow(KEY_LIST_ID)));
 		item.setID(cursor.getLong(cursor.getColumnIndexOrThrow(KEY_ID)));
-		item.setName(cursor.getString(cursor
-				.getColumnIndexOrThrow(KEY_ITEM)));
+		item.setName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_ITEM)));
+		item.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(KEY_DESCRIPTION)));
+		item.setPrice(cursor.getString(cursor.getColumnIndexOrThrow(KEY_PRICE)));
+		item.setQuantity(cursor.getString(cursor.getColumnIndexOrThrow(KEY_QUANTITY)));
+		item.setLocation(cursor.getString(cursor.getColumnIndexOrThrow(KEY_LOCATION)));
+		item.setWebLink(cursor.getString(cursor.getColumnIndexOrThrow(KEY_WEBLINK)));
 		return item;
 	}
 
