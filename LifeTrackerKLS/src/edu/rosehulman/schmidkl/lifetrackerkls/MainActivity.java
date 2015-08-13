@@ -87,7 +87,7 @@ public class MainActivity extends ListActivity {
 		} else if (id == R.id.add_list) {
 			newListDialog();
 			return true;
-		} else if (id == R.id.about) {
+		} else if (id == R.id.priceTextView) {
 			Intent aboutIntent = new Intent(this, AboutActivity.class);
 			this.startActivity(aboutIntent);
 			return true;

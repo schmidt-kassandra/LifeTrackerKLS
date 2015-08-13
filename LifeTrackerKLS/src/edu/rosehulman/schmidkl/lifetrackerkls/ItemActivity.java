@@ -151,11 +151,14 @@ public class ItemActivity extends ListActivity{
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which) {
-								//TODO: Properties Dialog
 								String name = nameEditText.getText().toString();
 								Item item = new Item(mListID);
 								item.setName(name);
 								addItem(item);
+								
+								//TODO: Properties Dialog
+								attributesDialog();
+								
 								dismiss();
 							}
 						});
@@ -245,6 +248,10 @@ public class ItemActivity extends ListActivity{
 			}
 		};
 		dialogFragment.show(getFragmentManager(), null);
+	}
+	
+	private void attributesDialog() {
+		
 	}
 
 	private void addItem(Item item) {

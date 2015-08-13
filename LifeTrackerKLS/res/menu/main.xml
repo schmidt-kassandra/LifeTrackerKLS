@@ -14,7 +14,7 @@
         android:icon="@drawable/ic_menu_add">
     </item>
     <item
-        android:id="@+id/about"
+        android:id="@+id/priceTextView"
         android:showAsAction="never"
         android:title="@string/about">
     </item>

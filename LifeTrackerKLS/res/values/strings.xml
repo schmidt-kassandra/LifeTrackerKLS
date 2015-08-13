@@ -23,5 +23,14 @@
     <string name="no_items">There are currently no items</string>
     <string name="edit_item_message">Please enter a new name for your item</string>
     <string name="delete_item_certainty">Are you sure you would like to delete this item?</string>
+    <string name="attribute_description_colon">Description:</string>
+    <string name="attribute_price_colon">Price:</string>
+    <string name="attribute_quantity_colon">Quantity:</string>
+    <string name="attribute_location_colon">Location:</string>
+    <string name="attribute_weblink_colon">Web-Link:</string>
+    <string name="attribute_priority">Priority</string>
+    <string name="attribute_reminder">Reminder</string>
+    <string name="attribute_image">Image</string>
+    <string name="attribute_voice">Voice</string>
 
 </resources>
