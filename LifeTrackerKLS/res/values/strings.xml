@@ -44,5 +44,6 @@
     <string name="priority_medium">Medium</string>
     <string name="priority_low">Low</string>
     <string name="reminder_message">Please set the reminder for this item:</string>
+    <string name="notification_title">A reminder you set is going off!!</string>
 
 </resources>

@@ -5,15 +5,20 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ListActivity;
+import android.app.Notification;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -68,6 +73,9 @@ public class ItemActivity extends ListActivity {
 	private static int mMonth;
 	private static int mYear;
 	private static boolean mReminderSet = false;
+	public static final String KEY_NOTIFICATION = "KEY_NOTIFICATION";
+	public static final String KEY_NOTIFICATION_ID = "KEY_NOTIFICATION_ID";
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -587,8 +595,9 @@ public class ItemActivity extends ListActivity {
 								mHour = timePicker.getCurrentHour();
 								mDay = datePicker.getDayOfMonth();
 								mMonth = datePicker.getMonth();
-								mYear = datePicker.getYear();
+								mYear = datePicker.getYear() - 1900;
 								mReminderSet = true;
+								setReminder();
 								dismiss();
 							}
 						});
@@ -598,6 +607,45 @@ public class ItemActivity extends ListActivity {
 		dialogFragment.show(getFragmentManager(), null);
 	}
 	
+	private void setReminder() {
+		Intent displayIntent = new Intent(this, MainActivity.class);
+
+		Notification notification = getNotification(displayIntent);
+
+		// Create an intent from this to send to the alarm manager. Add a
+		// notification ID for the manager to use.
+		Intent notificationIntent = new Intent(this,
+				ReminderBroadcastReceiver.class);
+		notificationIntent.putExtra(KEY_NOTIFICATION, notification);
+		notificationIntent.putExtra(KEY_NOTIFICATION_ID, mSelectedID);
+		int unusedRequestCode = 0;
+		PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
+				unusedRequestCode, notificationIntent,
+				PendingIntent.FLAG_UPDATE_CURRENT);
+		
+		Date date = getItem(mSelectedID).getReminder();
+		long time = SystemClock.elapsedRealtime() + date.getTime();
+//		long time = SystemClock.elapsedRealtime() + 15*1000;
+		Log.d("LT", "Set Time " + time);
+//		long time = date.getTime();
+//		long time = SystemClock.
+		AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+		alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, time,
+				pendingIntent);
+	}
+	
+	private Notification getNotification(Intent intent) {
+		Notification.Builder builder = new Notification.Builder(this);
+		builder.setContentTitle(getString(R.string.notification_title));
+		builder.setContentText(getItem(mSelectedID).getName());
+		builder.setSmallIcon(R.drawable.ic_launcher);
+
+		int unusedRequestCode = 0; // arbitrary
+		PendingIntent pendingIntent = PendingIntent.getActivity(this,
+				unusedRequestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+		builder.setContentIntent(pendingIntent);
+		return builder.build();
+	}
 	
 	
 	
