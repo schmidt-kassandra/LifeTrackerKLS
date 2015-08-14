@@ -1,5 +1,10 @@
 package edu.rosehulman.schmidkl.lifetrackerkls;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -7,6 +12,7 @@ import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -18,11 +24,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 public class ItemActivity extends ListActivity {
 	
@@ -50,10 +58,16 @@ public class ItemActivity extends ListActivity {
 	private static final int mEditItemID = 1;
 	private static final int mDeleteItemID = 2;
 	
-	private static String mPriority;
 	private static final String mLowPriority = "Low";
 	private static final String mMediumPriority = "Medium";
 	private static final String mHighPriority = "High";
+	private static String mPriority = mLowPriority;
+	private static int mMinute;
+	private static int mHour;
+	private static int mDay;
+	private static int mMonth;
+	private static int mYear;
+	private static boolean mReminderSet = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -343,7 +357,7 @@ public class ItemActivity extends ListActivity {
 					}
 				});
 				 
-				// TODO: Reminder, Image, Voice
+				// TODO: Image, Voice
 
 				 
 				// final Button imageButton = (Button) view
@@ -371,7 +385,7 @@ public class ItemActivity extends ListActivity {
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which) {
-								// TODO:Reminder, Image, Voice
+								// TODO:Image, Voice
 								String attribute;
 								String[] attributes = new String[5];
 
@@ -391,6 +405,9 @@ public class ItemActivity extends ListActivity {
 								item.setLocation(attributes[3]);
 								item.setWebLink(attributes[4]);
 								item.setPriority(mPriority);
+								item.setReminder(mMinute, mHour, mDay, mMonth, mYear);
+								
+								
 								editItem(item);
 								dismiss();
 							}
@@ -402,7 +419,7 @@ public class ItemActivity extends ListActivity {
 	}
 
 	private void itemAttributeSummaryDialog() {
-		// TODO: Priority, Reminder, Image, Voice
+		// TODO: Image, Voice
 		DialogFragment dialogFragment = new DialogFragment() {
 			@Override
 			public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -425,6 +442,8 @@ public class ItemActivity extends ListActivity {
 				TextView weblinkTextView = (TextView) view
 						.findViewById(R.id.summaryWebLinkTextView);
 				TextView priorityTextView = (TextView) view.findViewById(R.id.summaryPriorityTextView);
+				TextView reminderTimeTextView = (TextView) view.findViewById(R.id.summaryReminderTimeTextView);
+				TextView reminderDateTextView = (TextView) view.findViewById(R.id.summaryReminderDateTextView);
 
 				TextView[] textViewArray = new TextView[] {
 						descriptionTextView, priceTextView, quantityTextView,
@@ -439,10 +458,23 @@ public class ItemActivity extends ListActivity {
 						getItem(mSelectedID).getPriority()};
 
 				for (int k = 0; k < textViewArray.length; k++) {
-					textViewArray[k].setText(R.string.not_applicable);
+//					textViewArray[k].setText(R.string.not_applicable);
 					if (attributeArray[k] != null) {
 						textViewArray[k].setText(attributeArray[k]);
 					}
+				}
+				
+				if(mReminderSet) {
+					Date date = getItem(mSelectedID).getReminder();
+					
+					SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+					SimpleDateFormat dateFormat = new SimpleDateFormat("MM dd, yyyy", Locale.getDefault());
+					
+					String timePart = timeFormat.format(date);
+					String datePart = dateFormat.format(date);
+							
+					reminderTimeTextView.setText(timePart);
+					reminderDateTextView.setText(datePart);
 				}
 
 				builder.setNeutralButton(R.string.edit,
@@ -515,9 +547,25 @@ public class ItemActivity extends ListActivity {
 						getActivity());
 				// Inflate View
 				LayoutInflater inflater = getActivity().getLayoutInflater();
-				View view = inflater.inflate(R.layout.dialog_priority, null);
+				View view = inflater.inflate(R.layout.dialog_reminder, null);
 				builder.setView(view);
-
+				
+				final TimePicker timePicker = (TimePicker) view.findViewById(R.id.timePicker);
+				final DatePicker datePicker = (DatePicker) view.findViewById(R.id.datePicker);
+				
+				if (Build.VERSION.SDK_INT >= 11) {
+					datePicker.setCalendarViewShown(false);
+				}
+				
+				Calendar calendar = Calendar.getInstance();
+				mMinute = calendar.get(Calendar.MINUTE);
+				mHour = calendar.get(Calendar.HOUR_OF_DAY);
+				mDay = calendar.get(Calendar.DAY_OF_MONTH);
+				mMonth = calendar.get(Calendar.MONTH);
+				mYear = calendar.get(Calendar.YEAR);
+				
+				timePicker.setCurrentMinute(mMinute);
+				timePicker.setCurrentHour(mHour);
 				
 				builder.setNegativeButton(android.R.string.cancel,
 						new DialogInterface.OnClickListener() {
@@ -534,8 +582,13 @@ public class ItemActivity extends ListActivity {
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which) {
-								//TODO:
-
+								//TODO: Set Alarm Manager & Broadcast Receiver
+								mMinute = timePicker.getCurrentMinute();
+								mHour = timePicker.getCurrentHour();
+								mDay = datePicker.getDayOfMonth();
+								mMonth = datePicker.getMonth();
+								mYear = datePicker.getYear();
+								mReminderSet = true;
 								dismiss();
 							}
 						});

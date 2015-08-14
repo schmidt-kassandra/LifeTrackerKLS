@@ -1,5 +1,10 @@
 package edu.rosehulman.schmidkl.lifetrackerkls;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class Item {
 	
 	private long mListID;
@@ -11,6 +16,8 @@ public class Item {
 	private String mLocation = null;
 	private String mWebLink = null;
 	private String mPriority = "Low";
+	private Date mReminder = new Date();
+	SimpleDateFormat mDateFormat = new SimpleDateFormat("HH:mm MM dd, yyyy", Locale.getDefault());
 	
 	public Item() {
 		//Empty
@@ -87,4 +94,27 @@ public class Item {
 	public String getPriority() {
 		return mPriority;
 	}
+	
+	public void setReminder(int minute, int hour, int day, int month, int year) {
+		Date date = new Date(year, month, day, hour, minute);
+		mReminder = date;
+	}
+	
+	public void setReminder(String date) {
+		try {
+			mReminder = mDateFormat.parse(date);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public String getReminderString() {
+		return mDateFormat.format(mReminder);
+	}
+	
+	public Date getReminder() {
+		return mReminder;
+	}
+	
+
 }

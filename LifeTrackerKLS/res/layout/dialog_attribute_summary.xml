@@ -38,8 +38,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="@string/not_applicable" 
-            android:textColor="@color/text"/>
+            android:text="@string/not_applicable"
+            android:textColor="@color/text" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -114,7 +114,15 @@
             android:textStyle="italic" />
 
         <TextView
-            android:id="@+id/summaryReminderTextView"
+            android:id="@+id/summaryReminderTimeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/not_applicable"
+            android:textColor="@color/text" />
+
+        <TextView
+            android:id="@+id/summaryReminderDateTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"

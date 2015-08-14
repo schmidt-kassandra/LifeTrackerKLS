@@ -26,6 +26,7 @@ public class ItemAdapter {
 	public static final String KEY_LOCATION = "location";
 	public static final String KEY_WEBLINK = "weblink";
 	public static final String KEY_PRIORITY = "priority";
+	public static final String KEY_REMINDER = "reminder";
 	private static final String DROP_STATEMENT = "DROP TABLE IF EXISTS "
 			+ TABLE_NAME;
 	private static final String CREATE_STATEMENT;
@@ -40,7 +41,9 @@ public class ItemAdapter {
 		sb.append(KEY_QUANTITY + " text, ");
 		sb.append(KEY_LOCATION + " text, ");
 		sb.append(KEY_WEBLINK + " text, ");
-		sb.append(KEY_PRIORITY + " text");
+		sb.append(KEY_PRIORITY + " text, ");
+		sb.append(KEY_REMINDER + " datetime");
+
 		sb.append(")");
 		CREATE_STATEMENT = sb.toString();
 	}
@@ -66,7 +69,7 @@ public class ItemAdapter {
 	public Cursor getItemsCursor(long listID) {
 		String[] projection = new String[] { KEY_ID, KEY_ITEM, KEY_LIST_ID,
 				KEY_DESCRIPTION, KEY_PRICE, KEY_QUANTITY, KEY_LOCATION,
-				KEY_WEBLINK, KEY_PRIORITY };
+				KEY_WEBLINK, KEY_PRIORITY, KEY_REMINDER };
 		String selection = KEY_LIST_ID + "=" + listID;
 		return mDatabase.query(TABLE_NAME, projection, selection, null, null, null,
 				KEY_ITEM + " ASC");
@@ -89,13 +92,14 @@ public class ItemAdapter {
 		row.put(KEY_LOCATION, item.getLocation());
 		row.put(KEY_WEBLINK, item.getWebLink());
 		row.put(KEY_PRIORITY, item.getPriority());
+		row.put(KEY_REMINDER, item.getReminderString());
 		return row;
 	}
 
 	public Item getItem(long ID) {
 		String[] projection = new String[] { KEY_ID, KEY_ITEM, KEY_LIST_ID,
 				KEY_DESCRIPTION, KEY_PRICE, KEY_QUANTITY, KEY_LOCATION,
-				KEY_WEBLINK, KEY_PRIORITY };
+				KEY_WEBLINK, KEY_PRIORITY, KEY_REMINDER };
 		String selection = KEY_ID + "=" + ID;
 		Cursor cursor = mDatabase.query(TABLE_NAME, projection, selection,
 				null, null, null, null);
@@ -115,6 +119,7 @@ public class ItemAdapter {
 		item.setLocation(cursor.getString(cursor.getColumnIndexOrThrow(KEY_LOCATION)));
 		item.setWebLink(cursor.getString(cursor.getColumnIndexOrThrow(KEY_WEBLINK)));
 		item.setPriority(cursor.getString(cursor.getColumnIndexOrThrow(KEY_PRIORITY)));
+		item.setReminder(cursor.getString(cursor.getColumnIndexOrThrow(KEY_REMINDER)));
 		return item;
 	}
 
@@ -148,5 +153,4 @@ public class ItemAdapter {
 			onCreate(db);
 		}
 	}
-
 }
