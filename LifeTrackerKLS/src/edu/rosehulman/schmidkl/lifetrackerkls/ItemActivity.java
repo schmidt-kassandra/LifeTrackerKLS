@@ -20,11 +20,13 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.RadioGroup;
+import android.widget.RadioButton;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 public class ItemActivity extends ListActivity {
+	
+	//TODO: maybe change item text color based on Priority
 
 	/**
 	 * Constant to indicate that no row is selected for editing
@@ -49,6 +51,9 @@ public class ItemActivity extends ListActivity {
 	private static final int mDeleteItemID = 2;
 	
 	private static String mPriority;
+	private static final String mLowPriority = "Low";
+	private static final String mMediumPriority = "Medium";
+	private static final String mHighPriority = "High";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -318,12 +323,6 @@ public class ItemActivity extends ListActivity {
 
 				final Button priorityButton = (Button) view
 						.findViewById(R.id.priorityButton);
-				// final Button reminderButton = (Button) view
-				// .findViewById(R.id.reminderButton);
-				// final Button imageButton = (Button) view
-				// .findViewById(R.id.imageButton);
-				// final Button voiceButton = (Button) view
-				// .findViewById(R.id.voiceButton);
 
 				priorityButton.setOnClickListener(new OnClickListener() {
 
@@ -332,8 +331,25 @@ public class ItemActivity extends ListActivity {
 						priorityDialog();
 					}
 				});
+				
+				 final Button reminderButton = (Button) view
+				 .findViewById(R.id.reminderButton);
+				 
+				 reminderButton.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						reminderDialog();
+					}
+				});
+				 
+				// TODO: Reminder, Image, Voice
 
-				// TODO: Priority, Reminder, Image, Voice
+				 
+				// final Button imageButton = (Button) view
+				// .findViewById(R.id.imageButton);
+				// final Button voiceButton = (Button) view
+				// .findViewById(R.id.voiceButton);
 
 				builder.setNegativeButton(android.R.string.cancel,
 						new DialogInterface.OnClickListener() {
@@ -355,7 +371,7 @@ public class ItemActivity extends ListActivity {
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which) {
-								// TODO: Priority, Reminder, Image, Voice
+								// TODO:Reminder, Image, Voice
 								String attribute;
 								String[] attributes = new String[5];
 
@@ -374,6 +390,7 @@ public class ItemActivity extends ListActivity {
 								item.setQuantity(attributes[2]);
 								item.setLocation(attributes[3]);
 								item.setWebLink(attributes[4]);
+								item.setPriority(mPriority);
 								editItem(item);
 								dismiss();
 							}
@@ -407,17 +424,19 @@ public class ItemActivity extends ListActivity {
 						.findViewById(R.id.summaryLocationTextView);
 				TextView weblinkTextView = (TextView) view
 						.findViewById(R.id.summaryWebLinkTextView);
+				TextView priorityTextView = (TextView) view.findViewById(R.id.summaryPriorityTextView);
 
 				TextView[] textViewArray = new TextView[] {
 						descriptionTextView, priceTextView, quantityTextView,
-						locationTextView, weblinkTextView };
+						locationTextView, weblinkTextView, priorityTextView };
 
 				String[] attributeArray = new String[] {
 						getItem(mSelectedID).getDescription(),
 						getItem(mSelectedID).getPrice(),
 						getItem(mSelectedID).getQuantity(),
 						getItem(mSelectedID).getLocation(),
-						getItem(mSelectedID).getWebLink() };
+						getItem(mSelectedID).getWebLink(),
+						getItem(mSelectedID).getPriority()};
 
 				for (int k = 0; k < textViewArray.length; k++) {
 					textViewArray[k].setText(R.string.not_applicable);
@@ -442,7 +461,7 @@ public class ItemActivity extends ListActivity {
 		dialogFragment.show(getFragmentManager(), null);
 	}
 
-	private String priorityDialog() {
+	private void priorityDialog() {
 		DialogFragment dialogFragment = new DialogFragment() {
 			@Override
 			public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -450,14 +469,13 @@ public class ItemActivity extends ListActivity {
 						getActivity());
 				// Inflate View
 				LayoutInflater inflater = getActivity().getLayoutInflater();
-				View view = inflater.inflate(R.layout.dialog_name, null);
+				View view = inflater.inflate(R.layout.dialog_priority, null);
 				builder.setView(view);
-				
-				RadioGroup radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
-				
-				
 
-
+				final RadioButton highPriorityButton = (RadioButton) view.findViewById(R.id.priorityHighRadioButton);
+				final RadioButton mediumPriorityButton = (RadioButton) view.findViewById(R.id.priorityMediumRadioButton);
+				final RadioButton lowPriorityButton = (RadioButton) view.findViewById(R.id.priorityLowRadioButton);
+				
 				builder.setNegativeButton(android.R.string.cancel,
 						new DialogInterface.OnClickListener() {
 
@@ -473,8 +491,50 @@ public class ItemActivity extends ListActivity {
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which) {
-								// TODO:
-								mPriority = "Low";
+								if(highPriorityButton.isChecked()) {
+									mPriority = mHighPriority;
+								} else if (mediumPriorityButton.isChecked()) {
+									mPriority = mMediumPriority;
+								} else if (lowPriorityButton.isChecked()) {
+									mPriority = mLowPriority;
+								}
+								dismiss();
+							}
+						});
+				return builder.create();
+			}
+		};
+		dialogFragment.show(getFragmentManager(), null);
+	}
+	
+	private void reminderDialog() {
+		DialogFragment dialogFragment = new DialogFragment() {
+			@Override
+			public Dialog onCreateDialog(Bundle savedInstanceState) {
+				AlertDialog.Builder builder = new AlertDialog.Builder(
+						getActivity());
+				// Inflate View
+				LayoutInflater inflater = getActivity().getLayoutInflater();
+				View view = inflater.inflate(R.layout.dialog_priority, null);
+				builder.setView(view);
+
+				
+				builder.setNegativeButton(android.R.string.cancel,
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								dismiss();
+							}
+						});
+				builder.setPositiveButton(android.R.string.ok,
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								//TODO:
 
 								dismiss();
 							}
@@ -483,6 +543,24 @@ public class ItemActivity extends ListActivity {
 			}
 		};
 		dialogFragment.show(getFragmentManager(), null);
-		return mPriority;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
