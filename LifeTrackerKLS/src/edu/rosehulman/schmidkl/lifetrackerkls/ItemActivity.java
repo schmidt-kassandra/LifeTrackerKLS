@@ -8,7 +8,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.provider.CalendarContract.Attendees;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -16,10 +15,12 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RadioGroup;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
@@ -46,6 +47,8 @@ public class ItemActivity extends ListActivity {
 
 	private static final int mEditItemID = 1;
 	private static final int mDeleteItemID = 2;
+	
+	private static String mPriority;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -306,23 +309,31 @@ public class ItemActivity extends ListActivity {
 				String[] attributeArray = new String[] { item.getDescription(),
 						item.getPrice(), item.getQuantity(),
 						item.getLocation(), item.getWebLink() };
-				
+
 				for (int j = 0; j < editTextArray.length; j++) {
 					if (attributeArray[j] != null) {
 						editTextArray[j].setText(attributeArray[j]);
 					}
 				}
 
-//				final Button priorityButton = (Button) view
-//						.findViewById(R.id.priorityButton);
-//				final Button reminderButton = (Button) view
-//						.findViewById(R.id.reminderButton);
-//				final Button imageButton = (Button) view
-//						.findViewById(R.id.imageButton);
-//				final Button voiceButton = (Button) view
-//						.findViewById(R.id.voiceButton);
+				final Button priorityButton = (Button) view
+						.findViewById(R.id.priorityButton);
+				// final Button reminderButton = (Button) view
+				// .findViewById(R.id.reminderButton);
+				// final Button imageButton = (Button) view
+				// .findViewById(R.id.imageButton);
+				// final Button voiceButton = (Button) view
+				// .findViewById(R.id.voiceButton);
 
-				// TODO: button stuff
+				priorityButton.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						priorityDialog();
+					}
+				});
+
+				// TODO: Priority, Reminder, Image, Voice
 
 				builder.setNegativeButton(android.R.string.cancel,
 						new DialogInterface.OnClickListener() {
@@ -330,22 +341,27 @@ public class ItemActivity extends ListActivity {
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which) {
+								// TODO:maybe
+
+								// long itemID = item.getID();
+								// removeItem(itemID);
 								dismiss();
 							}
 						});
+
 				builder.setPositiveButton(android.R.string.ok,
 						new DialogInterface.OnClickListener() {
 
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which) {
+								// TODO: Priority, Reminder, Image, Voice
 								String attribute;
 								String[] attributes = new String[5];
 
 								for (int i = 0; i < editTextArray.length; i++) {
-									if (editTextArray[i].getText().toString() == null
-											|| editTextArray[i].getText()
-													.toString() == "") {
+									if (editTextArray[i].getText().toString()
+											.length() < 1) {
 										attribute = null;
 									} else {
 										attribute = editTextArray[i].getText()
@@ -367,8 +383,9 @@ public class ItemActivity extends ListActivity {
 		};
 		dialogFragment.show(getFragmentManager(), null);
 	}
+
 	private void itemAttributeSummaryDialog() {
-		// TODO: Finish Summary Dialog	xml & Add in TextView code
+		// TODO: Priority, Reminder, Image, Voice
 		DialogFragment dialogFragment = new DialogFragment() {
 			@Override
 			public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -376,9 +393,39 @@ public class ItemActivity extends ListActivity {
 						getActivity());
 				// Inflate View
 				LayoutInflater inflater = getActivity().getLayoutInflater();
-				View view = inflater.inflate(R.layout.dialog_attribute_summary, null);
+				View view = inflater.inflate(R.layout.dialog_attribute_summary,
+						null);
 				builder.setView(view);
-				
+
+				TextView descriptionTextView = (TextView) view
+						.findViewById(R.id.summaryDescriptionTextView);
+				TextView priceTextView = (TextView) view
+						.findViewById(R.id.summaryPriceTextView);
+				TextView quantityTextView = (TextView) view
+						.findViewById(R.id.summaryQuantityTextView);
+				TextView locationTextView = (TextView) view
+						.findViewById(R.id.summaryLocationTextView);
+				TextView weblinkTextView = (TextView) view
+						.findViewById(R.id.summaryWebLinkTextView);
+
+				TextView[] textViewArray = new TextView[] {
+						descriptionTextView, priceTextView, quantityTextView,
+						locationTextView, weblinkTextView };
+
+				String[] attributeArray = new String[] {
+						getItem(mSelectedID).getDescription(),
+						getItem(mSelectedID).getPrice(),
+						getItem(mSelectedID).getQuantity(),
+						getItem(mSelectedID).getLocation(),
+						getItem(mSelectedID).getWebLink() };
+
+				for (int k = 0; k < textViewArray.length; k++) {
+					textViewArray[k].setText(R.string.not_applicable);
+					if (attributeArray[k] != null) {
+						textViewArray[k].setText(attributeArray[k]);
+					}
+				}
+
 				builder.setNeutralButton(R.string.edit,
 						new DialogInterface.OnClickListener() {
 
@@ -392,6 +439,50 @@ public class ItemActivity extends ListActivity {
 				return builder.create();
 			}
 		};
-		dialogFragment.show(getFragmentManager(), null);	
+		dialogFragment.show(getFragmentManager(), null);
+	}
+
+	private String priorityDialog() {
+		DialogFragment dialogFragment = new DialogFragment() {
+			@Override
+			public Dialog onCreateDialog(Bundle savedInstanceState) {
+				AlertDialog.Builder builder = new AlertDialog.Builder(
+						getActivity());
+				// Inflate View
+				LayoutInflater inflater = getActivity().getLayoutInflater();
+				View view = inflater.inflate(R.layout.dialog_name, null);
+				builder.setView(view);
+				
+				RadioGroup radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
+				
+				
+
+
+				builder.setNegativeButton(android.R.string.cancel,
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								dismiss();
+							}
+						});
+				builder.setPositiveButton(android.R.string.ok,
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								// TODO:
+								mPriority = "Low";
+
+								dismiss();
+							}
+						});
+				return builder.create();
+			}
+		};
+		dialogFragment.show(getFragmentManager(), null);
+		return mPriority;
 	}
 }

@@ -10,6 +10,7 @@ public class Item {
 	private String mQuantity = null;
 	private String mLocation = null;
 	private String mWebLink = null;
+	private String mPriority = "Low";
 	
 	public Item() {
 		//Empty
@@ -77,5 +78,13 @@ public class Item {
 	
 	public String getWebLink() {
 		return mWebLink;
+	}
+	
+	public void setPriority(String priority) {
+		mPriority = priority;
+	}
+	
+	public String getPriority() {
+		return mPriority;
 	}
 }
