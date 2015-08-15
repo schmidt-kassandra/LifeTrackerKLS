@@ -32,6 +32,10 @@
             android:name=".ItemActivity"
             android:theme="@android:style/Theme.Holo" >
         </activity>
+                <activity
+            android:name=".ImageActivity"
+            android:theme="@android:style/Theme.Holo" >
+        </activity>
 
         <receiver android:name=".ReminderBroadcastReceiver" />
     </application>

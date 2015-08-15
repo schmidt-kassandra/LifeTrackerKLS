@@ -13,12 +13,15 @@ import android.app.ListActivity;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -38,8 +41,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 public class ItemActivity extends ListActivity {
-	
-	//TODO: maybe change item text color based on Priority
+
+	// TODO: maybe change item text color based on Priority
 
 	/**
 	 * Constant to indicate that no row is selected for editing
@@ -62,20 +65,14 @@ public class ItemActivity extends ListActivity {
 
 	private static final int mEditItemID = 1;
 	private static final int mDeleteItemID = 2;
-	
+
 	private static final String mLowPriority = "Low";
 	private static final String mMediumPriority = "Medium";
 	private static final String mHighPriority = "High";
-//	private static String mPriority = mLowPriority;
-//	private static int mMinute;
-//	private static int mHour;
-//	private static int mDay;
-//	private static int mMonth;
-//	private static int mYear;
-//	private static boolean mReminderSet = false;
 	public static final String KEY_NOTIFICATION = "KEY_NOTIFICATION";
 	public static final String KEY_NOTIFICATION_ID = "KEY_NOTIFICATION_ID";
-
+	public static final int KEY_PICK_FROM_GALLERY_REQUEST = 2;
+	public static final String KEY_IMAGE_PATH = "KEY_IMAGE_PATH";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -318,15 +315,15 @@ public class ItemActivity extends ListActivity {
 				View view = inflater.inflate(R.layout.dialog_attributes, null);
 				builder.setView(view);
 
-				final EditText descriptionEditText = (EditText) view
+				EditText descriptionEditText = (EditText) view
 						.findViewById(R.id.descriptionEditText);
-				final EditText priceEditText = (EditText) view
+				EditText priceEditText = (EditText) view
 						.findViewById(R.id.priceEditText);
-				final EditText quantityEditText = (EditText) view
+				EditText quantityEditText = (EditText) view
 						.findViewById(R.id.quantityEditText);
-				final EditText locationEditText = (EditText) view
+				EditText locationEditText = (EditText) view
 						.findViewById(R.id.locationEditText);
-				final EditText weblinkEditText = (EditText) view
+				EditText weblinkEditText = (EditText) view
 						.findViewById(R.id.weblinkEditText);
 
 				final EditText[] editTextArray = new EditText[] {
@@ -343,45 +340,46 @@ public class ItemActivity extends ListActivity {
 					}
 				}
 
-				final Button priorityButton = (Button) view
+				Button priorityButton = (Button) view
 						.findViewById(R.id.priorityButton);
-
 				priorityButton.setOnClickListener(new OnClickListener() {
 
 					@Override
 					public void onClick(View v) {
-						priorityDialog(item);					
+						priorityDialog(item);
 					}
 				});
-				
-				 final Button reminderButton = (Button) view
-				 .findViewById(R.id.reminderButton);
-				 
-				 reminderButton.setOnClickListener(new OnClickListener() {
-					
+
+				Button reminderButton = (Button) view
+						.findViewById(R.id.reminderButton);
+				reminderButton.setOnClickListener(new OnClickListener() {
+
 					@Override
 					public void onClick(View v) {
 						reminderDialog(item);
 					}
 				});
-				 
-				 final Button imageButton = (Button) view
-				 .findViewById(R.id.imageButton);
-				 
-				 imageButton.setOnClickListener(new OnClickListener() {
-					
+
+				Button imageButton = (Button) view
+						.findViewById(R.id.imageButton);
+				imageButton.setOnClickListener(new OnClickListener() {
+
 					@Override
 					public void onClick(View v) {
-						imageSet();
-						
+						imageSet(item);
 					}
 				});
-				 
-					// TODO: Voice
 
-				 
-				// final Button voiceButton = (Button) view
-				// .findViewById(R.id.voiceButton);
+				Button voiceButton = (Button) view
+						.findViewById(R.id.voiceButton);
+				voiceButton.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						// TODO:
+						voiceMessageDialog();
+					}
+				});
 
 				builder.setNegativeButton(android.R.string.cancel,
 						new DialogInterface.OnClickListener() {
@@ -420,7 +418,7 @@ public class ItemActivity extends ListActivity {
 								item.setPrice(attributes[1]);
 								item.setQuantity(attributes[2]);
 								item.setLocation(attributes[3]);
-								item.setWebLink(attributes[4]);	
+								item.setWebLink(attributes[4]);
 								editItem(item);
 								dismiss();
 							}
@@ -432,8 +430,8 @@ public class ItemActivity extends ListActivity {
 	}
 
 	private void itemAttributeSummaryDialog() {
-		// TODO: Image, Voice
-		
+		// TODO: Voice
+
 		DialogFragment dialogFragment = new DialogFragment() {
 			@Override
 			public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -455,9 +453,12 @@ public class ItemActivity extends ListActivity {
 						.findViewById(R.id.summaryLocationTextView);
 				TextView weblinkTextView = (TextView) view
 						.findViewById(R.id.summaryWebLinkTextView);
-				TextView priorityTextView = (TextView) view.findViewById(R.id.summaryPriorityTextView);
-				TextView reminderTimeTextView = (TextView) view.findViewById(R.id.summaryReminderTimeTextView);
-				TextView reminderDateTextView = (TextView) view.findViewById(R.id.summaryReminderDateTextView);
+				TextView priorityTextView = (TextView) view
+						.findViewById(R.id.summaryPriorityTextView);
+				TextView reminderTimeTextView = (TextView) view
+						.findViewById(R.id.summaryReminderTimeTextView);
+				TextView reminderDateTextView = (TextView) view
+						.findViewById(R.id.summaryReminderDateTextView);
 
 				TextView[] textViewArray = new TextView[] {
 						descriptionTextView, priceTextView, quantityTextView,
@@ -469,30 +470,40 @@ public class ItemActivity extends ListActivity {
 						getItem(mSelectedID).getQuantity(),
 						getItem(mSelectedID).getLocation(),
 						getItem(mSelectedID).getWebLink(),
-						getItem(mSelectedID).getPriority()};
+						getItem(mSelectedID).getPriority() };
 
 				for (int k = 0; k < textViewArray.length; k++) {
 					if (attributeArray[k] != null) {
 						textViewArray[k].setText(attributeArray[k]);
 					}
 				}
-				Log.d("LT", "" + mSelectedID);
-				Log.d("LT", "" + getItem(mSelectedID).getReminderBoolean());
-				
-				
-				//TODO: boolean needs to go into the Adapter; that's why it isn't working
-				if(getItem(mSelectedID).getReminderBoolean()) {
+
+				if (getItem(mSelectedID).getReminderBoolean()) {
 					Date date = getItem(mSelectedID).getReminder();
-					
-					SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
-					SimpleDateFormat dateFormat = new SimpleDateFormat("MM dd, yyyy", Locale.getDefault());
-					
+
+					SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm",
+							Locale.getDefault());
+					SimpleDateFormat dateFormat = new SimpleDateFormat(
+							"MM dd, yyyy", Locale.getDefault());
+
 					String timePart = timeFormat.format(date);
 					String datePart = dateFormat.format(date);
-							
+
 					reminderTimeTextView.setText(timePart);
 					reminderDateTextView.setText(datePart);
 				}
+				
+				Button imageButton = (Button) view.findViewById(R.id.summaryImageButton);
+				
+				imageButton.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						Intent imageIntent = new Intent(getActivity(), ImageActivity.class);
+						imageIntent.putExtra(KEY_IMAGE_PATH, getItem(mSelectedID).getImagePath());
+						getActivity().startActivity(imageIntent);
+					}
+				});
 
 				builder.setNeutralButton(R.string.edit,
 						new DialogInterface.OnClickListener() {
@@ -511,7 +522,6 @@ public class ItemActivity extends ListActivity {
 	}
 
 	private void priorityDialog(final Item item) {
-
 		DialogFragment dialogFragment = new DialogFragment() {
 			@Override
 			public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -522,10 +532,13 @@ public class ItemActivity extends ListActivity {
 				View view = inflater.inflate(R.layout.dialog_priority, null);
 				builder.setView(view);
 
-				final RadioButton highPriorityButton = (RadioButton) view.findViewById(R.id.priorityHighRadioButton);
-				final RadioButton mediumPriorityButton = (RadioButton) view.findViewById(R.id.priorityMediumRadioButton);
-				final RadioButton lowPriorityButton = (RadioButton) view.findViewById(R.id.priorityLowRadioButton);
-				
+				final RadioButton highPriorityButton = (RadioButton) view
+						.findViewById(R.id.priorityHighRadioButton);
+				final RadioButton mediumPriorityButton = (RadioButton) view
+						.findViewById(R.id.priorityMediumRadioButton);
+				final RadioButton lowPriorityButton = (RadioButton) view
+						.findViewById(R.id.priorityLowRadioButton);
+
 				builder.setNegativeButton(android.R.string.cancel,
 						new DialogInterface.OnClickListener() {
 
@@ -541,12 +554,12 @@ public class ItemActivity extends ListActivity {
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which) {
-								if(highPriorityButton.isChecked()) {
-									item.setPriority("High");
+								if (highPriorityButton.isChecked()) {
+									item.setPriority(mHighPriority);
 								} else if (mediumPriorityButton.isChecked()) {
-									item.setPriority("Medium");
+									item.setPriority(mMediumPriority);
 								} else if (lowPriorityButton.isChecked()) {
-									item.setPriority("Low");
+									item.setPriority(mLowPriority);
 								}
 								editItem(item);
 								dismiss();
@@ -557,7 +570,7 @@ public class ItemActivity extends ListActivity {
 		};
 		dialogFragment.show(getFragmentManager(), null);
 	}
-	
+
 	private void reminderDialog(final Item item) {
 		DialogFragment dialogFragment = new DialogFragment() {
 			@Override
@@ -568,21 +581,23 @@ public class ItemActivity extends ListActivity {
 				LayoutInflater inflater = getActivity().getLayoutInflater();
 				View view = inflater.inflate(R.layout.dialog_reminder, null);
 				builder.setView(view);
-				
-				final TimePicker timePicker = (TimePicker) view.findViewById(R.id.timePicker);
-				final DatePicker datePicker = (DatePicker) view.findViewById(R.id.datePicker);
-				
+
+				final TimePicker timePicker = (TimePicker) view
+						.findViewById(R.id.timePicker);
+				final DatePicker datePicker = (DatePicker) view
+						.findViewById(R.id.datePicker);
+
 				if (Build.VERSION.SDK_INT >= 11) {
 					datePicker.setCalendarViewShown(false);
 				}
-				
+
 				Calendar calendar = Calendar.getInstance();
 				int minuteCalendar = calendar.get(Calendar.MINUTE);
 				int hourCalendar = calendar.get(Calendar.HOUR_OF_DAY);
-				
+
 				timePicker.setCurrentMinute(minuteCalendar);
 				timePicker.setCurrentHour(hourCalendar);
-				
+
 				builder.setNegativeButton(android.R.string.cancel,
 						new DialogInterface.OnClickListener() {
 
@@ -603,12 +618,9 @@ public class ItemActivity extends ListActivity {
 								int day = datePicker.getDayOfMonth();
 								int month = datePicker.getMonth();
 								int year = datePicker.getYear() - 1900;
-								
+
 								item.setReminder(minute, hour, day, month, year);
 								item.setReminderBoolean(true);
-								Log.d("LT", "" + item.getReminderBoolean());
-								Log.d("LT", "" + mSelectedID);
-
 								editItem(item);
 								setReminder();
 								dismiss();
@@ -619,7 +631,7 @@ public class ItemActivity extends ListActivity {
 		};
 		dialogFragment.show(getFragmentManager(), null);
 	}
-	
+
 	private void setReminder() {
 		Intent displayIntent = new Intent(this, MainActivity.class);
 
@@ -635,18 +647,19 @@ public class ItemActivity extends ListActivity {
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
 				unusedRequestCode, notificationIntent,
 				PendingIntent.FLAG_UPDATE_CURRENT);
-		
+
 		Date date = getItem(mSelectedID).getReminder();
-		long time = SystemClock.elapsedRealtime() + date.getTime() + 15*1000;
-//		long time = SystemClock.elapsedRealtime() + 15*1000;
+		//TODO: Does not go off when scheduled
+		long time = SystemClock.elapsedRealtime() + date.getTime() + 15 * 1000;
+		// long time = SystemClock.elapsedRealtime() + 15*1000;
 		Log.d("LT", "Set Time " + time);
-//		long time = date.getTime();
-//		long time = SystemClock.
+		// long time = date.getTime();
+		// long time = SystemClock.
 		AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 		alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, time,
 				pendingIntent);
 	}
-	
+
 	private Notification getNotification(Intent intent) {
 		Notification.Builder builder = new Notification.Builder(this);
 		builder.setContentTitle(getString(R.string.notification_title));
@@ -659,25 +672,46 @@ public class ItemActivity extends ListActivity {
 		builder.setContentIntent(pendingIntent);
 		return builder.build();
 	}
-	
-	private void imageSet() {
-		//TODO:
+
+	private void imageSet(Item item) {
+		Intent galleryIntent = new Intent(Intent.ACTION_PICK,
+				MediaStore.Images.Media.EXTERNAL_CONTENT_URI);			
 		
+		this.startActivityForResult(galleryIntent,
+				KEY_PICK_FROM_GALLERY_REQUEST);
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (resultCode != RESULT_OK) {
+			return;
+		}
+		if (requestCode == KEY_PICK_FROM_GALLERY_REQUEST) {
+			Uri uri = data.getData();
+			String realPath = getRealPathFromUri(uri);
+			Log.d(MainActivity.LT, "Real URI on Device" + realPath);
+			//TODO: Won't save imagePath		
+			getItem(mSelectedID).setImagePath(realPath);
+			editItem(getItem(mSelectedID));
+		}
+	}
+
+	// From
+	// http://android-er.blogspot.com/2013/08/convert-between-uri-and-file-path-and.html
+	private String getRealPathFromUri(Uri contentUri) {
+		String[] projection = { MediaStore.Images.Media.DATA };
+		CursorLoader cursorLoader = new CursorLoader(this, contentUri,
+				projection, null, null, null);
+		Cursor cursor = cursorLoader.loadInBackground();
+		cursor.moveToFirst();
+		int columnIndex = cursor
+				.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+		return cursor.getString(columnIndex);
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	private void voiceMessageDialog() {
+		
+	}
+
+
 }

@@ -5,6 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import android.util.Log;
+
 public class Item {
 	
 	private long mListID;
@@ -19,6 +21,7 @@ public class Item {
 	private boolean mIsReminderSet = false;
 	private Date mReminder = new Date();
 	SimpleDateFormat mDateFormat = new SimpleDateFormat("HH:mm MM dd, yyyy", Locale.getDefault());
+	private String mImagePath = null;
 	
 	public Item() {
 		//Empty
@@ -123,6 +126,14 @@ public class Item {
 	
 	public boolean getReminderBoolean() {
 		return mIsReminderSet;
+	}
+	
+	public void setImagePath(String path) {
+		mImagePath = path;
+	}
+	
+	public String getImagePath() {
+		return mImagePath;
 	}
 	
 
