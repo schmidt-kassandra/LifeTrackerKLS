@@ -66,13 +66,13 @@ public class ItemActivity extends ListActivity {
 	private static final String mLowPriority = "Low";
 	private static final String mMediumPriority = "Medium";
 	private static final String mHighPriority = "High";
-	private static String mPriority = mLowPriority;
-	private static int mMinute;
-	private static int mHour;
-	private static int mDay;
-	private static int mMonth;
-	private static int mYear;
-	private static boolean mReminderSet = false;
+//	private static String mPriority = mLowPriority;
+//	private static int mMinute;
+//	private static int mHour;
+//	private static int mDay;
+//	private static int mMonth;
+//	private static int mYear;
+//	private static boolean mReminderSet = false;
 	public static final String KEY_NOTIFICATION = "KEY_NOTIFICATION";
 	public static final String KEY_NOTIFICATION_ID = "KEY_NOTIFICATION_ID";
 
@@ -350,7 +350,7 @@ public class ItemActivity extends ListActivity {
 
 					@Override
 					public void onClick(View v) {
-						priorityDialog();
+						priorityDialog(item);					
 					}
 				});
 				
@@ -361,15 +361,25 @@ public class ItemActivity extends ListActivity {
 					
 					@Override
 					public void onClick(View v) {
-						reminderDialog();
+						reminderDialog(item);
 					}
 				});
 				 
-				// TODO: Image, Voice
+				 final Button imageButton = (Button) view
+				 .findViewById(R.id.imageButton);
+				 
+				 imageButton.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						imageSet();
+						
+					}
+				});
+				 
+					// TODO: Voice
 
 				 
-				// final Button imageButton = (Button) view
-				// .findViewById(R.id.imageButton);
 				// final Button voiceButton = (Button) view
 				// .findViewById(R.id.voiceButton);
 
@@ -393,7 +403,6 @@ public class ItemActivity extends ListActivity {
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which) {
-								// TODO:Image, Voice
 								String attribute;
 								String[] attributes = new String[5];
 
@@ -411,11 +420,7 @@ public class ItemActivity extends ListActivity {
 								item.setPrice(attributes[1]);
 								item.setQuantity(attributes[2]);
 								item.setLocation(attributes[3]);
-								item.setWebLink(attributes[4]);
-								item.setPriority(mPriority);
-								item.setReminder(mMinute, mHour, mDay, mMonth, mYear);
-								
-								
+								item.setWebLink(attributes[4]);	
 								editItem(item);
 								dismiss();
 							}
@@ -428,6 +433,7 @@ public class ItemActivity extends ListActivity {
 
 	private void itemAttributeSummaryDialog() {
 		// TODO: Image, Voice
+		
 		DialogFragment dialogFragment = new DialogFragment() {
 			@Override
 			public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -466,13 +472,16 @@ public class ItemActivity extends ListActivity {
 						getItem(mSelectedID).getPriority()};
 
 				for (int k = 0; k < textViewArray.length; k++) {
-//					textViewArray[k].setText(R.string.not_applicable);
 					if (attributeArray[k] != null) {
 						textViewArray[k].setText(attributeArray[k]);
 					}
 				}
+				Log.d("LT", "" + mSelectedID);
+				Log.d("LT", "" + getItem(mSelectedID).getReminderBoolean());
 				
-				if(mReminderSet) {
+				
+				//TODO: boolean needs to go into the Adapter; that's why it isn't working
+				if(getItem(mSelectedID).getReminderBoolean()) {
 					Date date = getItem(mSelectedID).getReminder();
 					
 					SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
@@ -501,7 +510,8 @@ public class ItemActivity extends ListActivity {
 		dialogFragment.show(getFragmentManager(), null);
 	}
 
-	private void priorityDialog() {
+	private void priorityDialog(final Item item) {
+
 		DialogFragment dialogFragment = new DialogFragment() {
 			@Override
 			public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -532,12 +542,13 @@ public class ItemActivity extends ListActivity {
 							public void onClick(DialogInterface dialog,
 									int which) {
 								if(highPriorityButton.isChecked()) {
-									mPriority = mHighPriority;
+									item.setPriority("High");
 								} else if (mediumPriorityButton.isChecked()) {
-									mPriority = mMediumPriority;
+									item.setPriority("Medium");
 								} else if (lowPriorityButton.isChecked()) {
-									mPriority = mLowPriority;
+									item.setPriority("Low");
 								}
+								editItem(item);
 								dismiss();
 							}
 						});
@@ -547,7 +558,7 @@ public class ItemActivity extends ListActivity {
 		dialogFragment.show(getFragmentManager(), null);
 	}
 	
-	private void reminderDialog() {
+	private void reminderDialog(final Item item) {
 		DialogFragment dialogFragment = new DialogFragment() {
 			@Override
 			public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -566,14 +577,11 @@ public class ItemActivity extends ListActivity {
 				}
 				
 				Calendar calendar = Calendar.getInstance();
-				mMinute = calendar.get(Calendar.MINUTE);
-				mHour = calendar.get(Calendar.HOUR_OF_DAY);
-				mDay = calendar.get(Calendar.DAY_OF_MONTH);
-				mMonth = calendar.get(Calendar.MONTH);
-				mYear = calendar.get(Calendar.YEAR);
+				int minuteCalendar = calendar.get(Calendar.MINUTE);
+				int hourCalendar = calendar.get(Calendar.HOUR_OF_DAY);
 				
-				timePicker.setCurrentMinute(mMinute);
-				timePicker.setCurrentHour(mHour);
+				timePicker.setCurrentMinute(minuteCalendar);
+				timePicker.setCurrentHour(hourCalendar);
 				
 				builder.setNegativeButton(android.R.string.cancel,
 						new DialogInterface.OnClickListener() {
@@ -590,13 +598,18 @@ public class ItemActivity extends ListActivity {
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which) {
-								//TODO: Set Alarm Manager & Broadcast Receiver
-								mMinute = timePicker.getCurrentMinute();
-								mHour = timePicker.getCurrentHour();
-								mDay = datePicker.getDayOfMonth();
-								mMonth = datePicker.getMonth();
-								mYear = datePicker.getYear() - 1900;
-								mReminderSet = true;
+								int minute = timePicker.getCurrentMinute();
+								int hour = timePicker.getCurrentHour();
+								int day = datePicker.getDayOfMonth();
+								int month = datePicker.getMonth();
+								int year = datePicker.getYear() - 1900;
+								
+								item.setReminder(minute, hour, day, month, year);
+								item.setReminderBoolean(true);
+								Log.d("LT", "" + item.getReminderBoolean());
+								Log.d("LT", "" + mSelectedID);
+
+								editItem(item);
 								setReminder();
 								dismiss();
 							}
@@ -624,7 +637,7 @@ public class ItemActivity extends ListActivity {
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		
 		Date date = getItem(mSelectedID).getReminder();
-		long time = SystemClock.elapsedRealtime() + date.getTime();
+		long time = SystemClock.elapsedRealtime() + date.getTime() + 15*1000;
 //		long time = SystemClock.elapsedRealtime() + 15*1000;
 		Log.d("LT", "Set Time " + time);
 //		long time = date.getTime();
@@ -647,7 +660,10 @@ public class ItemActivity extends ListActivity {
 		return builder.build();
 	}
 	
-	
+	private void imageSet() {
+		//TODO:
+		
+	}
 	
 	
 	

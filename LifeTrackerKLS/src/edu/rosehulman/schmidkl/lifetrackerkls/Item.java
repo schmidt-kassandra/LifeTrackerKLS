@@ -16,6 +16,7 @@ public class Item {
 	private String mLocation = null;
 	private String mWebLink = null;
 	private String mPriority = "Low";
+	private boolean mIsReminderSet = false;
 	private Date mReminder = new Date();
 	SimpleDateFormat mDateFormat = new SimpleDateFormat("HH:mm MM dd, yyyy", Locale.getDefault());
 	
@@ -114,6 +115,14 @@ public class Item {
 	
 	public Date getReminder() {
 		return mReminder;
+	}
+	
+	public void setReminderBoolean(boolean reminder) {
+		mIsReminderSet = reminder;
+	}
+	
+	public boolean getReminderBoolean() {
+		return mIsReminderSet;
 	}
 	
 

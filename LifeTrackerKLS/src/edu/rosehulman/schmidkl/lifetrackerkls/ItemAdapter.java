@@ -27,6 +27,9 @@ public class ItemAdapter {
 	public static final String KEY_WEBLINK = "weblink";
 	public static final String KEY_PRIORITY = "priority";
 	public static final String KEY_REMINDER = "reminder";
+	public static final String KEY_REMINDER_BOOLEAN = "reminderboolean";
+	private static final int yesReminder = 1;
+	private static final int noReminder = 0;
 	private static final String DROP_STATEMENT = "DROP TABLE IF EXISTS "
 			+ TABLE_NAME;
 	private static final String CREATE_STATEMENT;
@@ -42,6 +45,7 @@ public class ItemAdapter {
 		sb.append(KEY_LOCATION + " text, ");
 		sb.append(KEY_WEBLINK + " text, ");
 		sb.append(KEY_PRIORITY + " text, ");
+		sb.append(KEY_REMINDER_BOOLEAN + " integer, ");
 		sb.append(KEY_REMINDER + " datetime");
 
 		sb.append(")");
@@ -69,10 +73,10 @@ public class ItemAdapter {
 	public Cursor getItemsCursor(long listID) {
 		String[] projection = new String[] { KEY_ID, KEY_ITEM, KEY_LIST_ID,
 				KEY_DESCRIPTION, KEY_PRICE, KEY_QUANTITY, KEY_LOCATION,
-				KEY_WEBLINK, KEY_PRIORITY, KEY_REMINDER };
+				KEY_WEBLINK, KEY_PRIORITY, KEY_REMINDER_BOOLEAN, KEY_REMINDER };
 		String selection = KEY_LIST_ID + "=" + listID;
 		return mDatabase.query(TABLE_NAME, projection, selection, null, null, null,
-				KEY_ITEM + " ASC");
+				KEY_PRIORITY + " DESC");
 	}
 
 	public long addItem(Item item) {
@@ -92,6 +96,13 @@ public class ItemAdapter {
 		row.put(KEY_LOCATION, item.getLocation());
 		row.put(KEY_WEBLINK, item.getWebLink());
 		row.put(KEY_PRIORITY, item.getPriority());
+		
+		if(item.getReminderBoolean()) {
+			row.put(KEY_REMINDER_BOOLEAN, yesReminder);
+		} else {
+			row.put(KEY_REMINDER_BOOLEAN, noReminder);
+		}
+		
 		row.put(KEY_REMINDER, item.getReminderString());
 		return row;
 	}
@@ -99,7 +110,7 @@ public class ItemAdapter {
 	public Item getItem(long ID) {
 		String[] projection = new String[] { KEY_ID, KEY_ITEM, KEY_LIST_ID,
 				KEY_DESCRIPTION, KEY_PRICE, KEY_QUANTITY, KEY_LOCATION,
-				KEY_WEBLINK, KEY_PRIORITY, KEY_REMINDER };
+				KEY_WEBLINK, KEY_PRIORITY, KEY_REMINDER_BOOLEAN, KEY_REMINDER };
 		String selection = KEY_ID + "=" + ID;
 		Cursor cursor = mDatabase.query(TABLE_NAME, projection, selection,
 				null, null, null, null);
@@ -119,6 +130,13 @@ public class ItemAdapter {
 		item.setLocation(cursor.getString(cursor.getColumnIndexOrThrow(KEY_LOCATION)));
 		item.setWebLink(cursor.getString(cursor.getColumnIndexOrThrow(KEY_WEBLINK)));
 		item.setPriority(cursor.getString(cursor.getColumnIndexOrThrow(KEY_PRIORITY)));
+		
+		if(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_REMINDER_BOOLEAN)) == yesReminder) {
+			item.setReminderBoolean(true);
+		} else {
+			item.setReminderBoolean(false);
+		}
+		
 		item.setReminder(cursor.getString(cursor.getColumnIndexOrThrow(KEY_REMINDER)));
 		return item;
 	}
