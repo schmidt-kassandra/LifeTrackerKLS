@@ -85,7 +85,7 @@ public class ItemAdapter {
 				KEY_VOICE_PATH };
 		String selection = KEY_LIST_ID + "=" + listID;
 		return mDatabase.query(TABLE_NAME, projection, selection, null, null,
-				null, KEY_PRIORITY + " ASC");
+				null, KEY_PRIORITY + " ASC, " + KEY_ITEM + " ASC");
 	}
 
 	public long addItem(Item item) {

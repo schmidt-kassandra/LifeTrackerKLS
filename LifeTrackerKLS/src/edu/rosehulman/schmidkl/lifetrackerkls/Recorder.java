@@ -16,7 +16,7 @@ import android.widget.Button;
 public class Recorder extends Activity {
 
 //	private static final String LOG_TAG = "AudioRecordTest";
-	private static String mFileName = null;
+	private static String mFilePath = null;
 
 //	private RecordButton mRecordButton = null;
 	private MediaRecorder mRecorder = null;
@@ -27,17 +27,19 @@ public class Recorder extends Activity {
 	boolean mStartRecording = true;
 	
 	public static final String KEY_VOICE_PATH = "KEY_VOICE_PATH";
-
-
-	public Recorder() {
-		mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-		mFileName += "/audiorecordtest.3gp";
-	}
-
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_recorder);
+		
+		Intent data = getIntent();
+		
+		long listID = data.getLongExtra(ItemActivity.KEY_LIST_ID, 0);
+		long itemID = data.getLongExtra(ItemActivity.KEY_VOICE_ITEM_ID, 0);
+		
+		mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
+		mFilePath += "/audio" + listID + "_" + itemID + ".3gp";
 		
 		final Button recordButton = (Button) findViewById(R.id.startAndStopButton);
 		
@@ -62,7 +64,7 @@ public class Recorder extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent returnIntent = new Intent();		
-				returnIntent.putExtra(KEY_VOICE_PATH, mFileName);					
+				returnIntent.putExtra(KEY_VOICE_PATH, mFilePath);					
 				setResult(RESULT_OK, returnIntent);
 				finish();
 			}
@@ -91,7 +93,7 @@ public class Recorder extends Activity {
 		mRecorder = new MediaRecorder();
 		mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
 		mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-		mRecorder.setOutputFile(mFileName);
+		mRecorder.setOutputFile(mFilePath);
 		mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
 		try {
