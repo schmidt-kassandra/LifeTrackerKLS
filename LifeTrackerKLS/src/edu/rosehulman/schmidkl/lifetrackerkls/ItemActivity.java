@@ -52,15 +52,14 @@ public class ItemActivity extends ListActivity {
 	/**
 	 * Index of the row selected
 	 */
-	private long mSelectedID = NO_ID_SELECTED;
+	private static long mSelectedID = NO_ID_SELECTED;
 
 	public static final String KEY_LIST_ID = "KEY_LIST_ID";
 
 	private static long mListID;
 
-	private ItemAdapter mItemDataAdapter;
-	private SimpleCursorAdapter mCursorAdapter;
-
+	private static ItemAdapter mItemDataAdapter;
+	private static SimpleCursorAdapter mCursorAdapter;
 
 	private static final int mGroupNumber = 0;
 
@@ -70,11 +69,14 @@ public class ItemActivity extends ListActivity {
 	private static final String mLowPriority = "Low";
 	private static final String mMediumPriority = "Medium";
 	private static final String mHighPriority = "High";
+	
 	public static final String KEY_NOTIFICATION = "KEY_NOTIFICATION";
 	public static final String KEY_NOTIFICATION_ID = "KEY_NOTIFICATION_ID";
 	public static final int KEY_PICK_FROM_GALLERY_REQUEST = 2;
 	public static final String KEY_IMAGE_PATH = "KEY_IMAGE_PATH";
 	public static final int KEY_VOICE_RECORDING = 7;
+	public static final String KEY_LIST_ALARM_ID = "KEY_LIST_ALARM_ID";
+
 
 
 	@Override
@@ -289,11 +291,11 @@ public class ItemActivity extends ListActivity {
 		mCursorAdapter.changeCursor(mItemDataAdapter.getItemsCursor(mListID));
 	}
 
-	private Item getItem(long ID) {
+	public static Item getItem(long ID) {
 		return mItemDataAdapter.getItem(ID);
 	}
 
-	private void editItem(Item item) {
+	public static void editItem(Item item) {
 		if (mSelectedID == NO_ID_SELECTED) {
 			Log.e(MainActivity.LT, "Attempt to update with no item selected.");
 		}
@@ -467,7 +469,7 @@ public class ItemActivity extends ListActivity {
 						descriptionTextView, priceTextView, quantityTextView,
 						locationTextView, weblinkTextView, priorityTextView };
 				
-				Item item = getItem(mSelectedID);
+				final Item item = getItem(mSelectedID);
 
 				String[] attributeArray = new String[] {
 						item.getDescription(),
@@ -500,7 +502,11 @@ public class ItemActivity extends ListActivity {
 
 				Button imageButton = (Button) view
 						.findViewById(R.id.summaryImageButton);
+				
 
+				imageButton.setEnabled(item.getImageBoolean());
+				
+				
 				imageButton.setOnClickListener(new OnClickListener() {
 
 					@Override
@@ -508,13 +514,15 @@ public class ItemActivity extends ListActivity {
 						Intent imageIntent = new Intent(getActivity(),
 								ImageActivity.class);
 						imageIntent.putExtra(KEY_IMAGE_PATH,
-								getItem(mSelectedID).getImagePath());
+								item.getImagePath());
 						getActivity().startActivity(imageIntent);
 					}
 				});
 
 				Button voiceButton = (Button) view
 						.findViewById(R.id.summaryVoiceButton);
+				
+				voiceButton.setEnabled(item.getVoiceBoolean());
 
 				voiceButton.setOnClickListener(new OnClickListener() {
 
@@ -718,13 +726,14 @@ public class ItemActivity extends ListActivity {
 				ReminderBroadcastReceiver.class);
 		notificationIntent.putExtra(KEY_NOTIFICATION, notification);
 		notificationIntent.putExtra(KEY_NOTIFICATION_ID, mSelectedID);
+		notificationIntent.putExtra(KEY_LIST_ALARM_ID, mSelectedID);
 		int unusedRequestCode = 0;
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
 				unusedRequestCode, notificationIntent,
 				PendingIntent.FLAG_UPDATE_CURRENT);
 
 		Date date = getItem(mSelectedID).getReminder();
-		// TODO: Does not go off when scheduled
+		// TODO: Does not go off when scheduled; Look at Dr. Boutell's email
 		long time = SystemClock.elapsedRealtime() + date.getTime() + 15 * 1000;
 		// long time = SystemClock.elapsedRealtime() + 15*1000;
 		Log.d("LT", "Set Time " + time);
@@ -751,7 +760,6 @@ public class ItemActivity extends ListActivity {
 	private void imageSet() {
 		Intent galleryIntent = new Intent(Intent.ACTION_PICK,
 				MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-
 		this.startActivityForResult(galleryIntent,
 				KEY_PICK_FROM_GALLERY_REQUEST);
 	}
@@ -767,16 +775,18 @@ public class ItemActivity extends ListActivity {
 			Log.d(MainActivity.LT, "Real URI on Device " + realPath);			
 			Item item = getItem(mSelectedID);
 			item.setImagePath(realPath);
+			item.setImageBoolean(true);
 			editItem(item);
 		}
 		
 		if (requestCode == KEY_VOICE_RECORDING) {
+			// TODO: Ask punisher about file
 			Uri uri = data.getData();
 			String realPath = getRealPathFromUri(uri);
 			Log.d(MainActivity.LT, "Real URI on Device" + realPath);
-			// TODO: Won't save voicePath, maybe
 			Item item = getItem(mSelectedID);
 			item.setVoicePath(realPath);
+			item.setVoiceBoolean(true);
 			editItem(item);
 		}
 	}
@@ -798,5 +808,4 @@ public class ItemActivity extends ListActivity {
 		Intent recordIntent = new Intent(this, Recorder.class);
 		startActivityForResult(recordIntent, KEY_VOICE_RECORDING );
 	}
-
 }

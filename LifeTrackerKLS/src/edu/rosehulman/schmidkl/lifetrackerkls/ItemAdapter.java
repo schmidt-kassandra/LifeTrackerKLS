@@ -30,8 +30,10 @@ public class ItemAdapter {
 	public static final String KEY_REMINDER = "reminder";
 	private static final int yesReminder = 1;
 	private static final int noReminder = 0;
+	public static final String KEY_IMAGE_BOOLEAN = "imageboolean";
 	public static final String KEY_IMAGE_PATH = "image";
-	
+	public static final String KEY_VOICE_BOOLEAN = "voiceboolean";
+	public static final String KEY_VOICE_PATH = "voice";
 	private static final String DROP_STATEMENT = "DROP TABLE IF EXISTS "
 			+ TABLE_NAME;
 	private static final String CREATE_STATEMENT;
@@ -49,7 +51,10 @@ public class ItemAdapter {
 		sb.append(KEY_PRIORITY + " text, ");
 		sb.append(KEY_REMINDER_BOOLEAN + " integer, ");
 		sb.append(KEY_REMINDER + " datetime, ");
-		sb.append(KEY_IMAGE_PATH + " text");
+		sb.append(KEY_IMAGE_BOOLEAN + " integer, ");
+		sb.append(KEY_IMAGE_PATH + " text, ");
+		sb.append(KEY_VOICE_BOOLEAN + " integer, ");
+		sb.append(KEY_VOICE_PATH + " text");
 		sb.append(")");
 		CREATE_STATEMENT = sb.toString();
 	}
@@ -75,7 +80,7 @@ public class ItemAdapter {
 	public Cursor getItemsCursor(long listID) {
 		String[] projection = new String[] { KEY_ID, KEY_ITEM, KEY_LIST_ID,
 				KEY_DESCRIPTION, KEY_PRICE, KEY_QUANTITY, KEY_LOCATION,
-				KEY_WEBLINK, KEY_PRIORITY, KEY_REMINDER_BOOLEAN, KEY_REMINDER, KEY_IMAGE_PATH };
+				KEY_WEBLINK, KEY_PRIORITY, KEY_REMINDER_BOOLEAN, KEY_REMINDER, KEY_IMAGE_BOOLEAN, KEY_IMAGE_PATH, KEY_VOICE_BOOLEAN, KEY_VOICE_PATH };
 		String selection = KEY_LIST_ID + "=" + listID;
 		return mDatabase.query(TABLE_NAME, projection, selection, null, null, null,
 				KEY_PRIORITY + " DESC");
@@ -104,7 +109,18 @@ public class ItemAdapter {
 			row.put(KEY_REMINDER_BOOLEAN, noReminder);
 		}	
 		row.put(KEY_REMINDER, item.getReminderString());
+		if(item.getImageBoolean()) {
+			row.put(KEY_IMAGE_BOOLEAN, yesReminder);
+		} else {
+			row.put(KEY_IMAGE_BOOLEAN, noReminder);
+		}
 		row.put(KEY_IMAGE_PATH, item.getImagePath());
+		if(item.getVoiceBoolean()) {
+			row.put(KEY_VOICE_BOOLEAN, yesReminder);
+		} else {
+			row.put(KEY_VOICE_BOOLEAN, noReminder);
+		}
+		row.put(KEY_VOICE_PATH, item.getVoicePath());
 		Log.d(MainActivity.LT, "IA 108" + item.getVoicePath());
 		return row;
 	}
@@ -112,7 +128,7 @@ public class ItemAdapter {
 	public Item getItem(long ID) {
 		String[] projection = new String[] { KEY_ID, KEY_ITEM, KEY_LIST_ID,
 				KEY_DESCRIPTION, KEY_PRICE, KEY_QUANTITY, KEY_LOCATION,
-				KEY_WEBLINK, KEY_PRIORITY, KEY_REMINDER_BOOLEAN, KEY_REMINDER, KEY_IMAGE_PATH };
+				KEY_WEBLINK, KEY_PRIORITY, KEY_REMINDER_BOOLEAN, KEY_REMINDER, KEY_IMAGE_BOOLEAN, KEY_IMAGE_PATH, KEY_VOICE_BOOLEAN, KEY_VOICE_PATH };
 		String selection = KEY_ID + "=" + ID;
 		Cursor cursor = mDatabase.query(TABLE_NAME, projection, selection,
 				null, null, null, null);
@@ -138,7 +154,18 @@ public class ItemAdapter {
 			item.setReminderBoolean(false);
 		}
 		item.setReminder(cursor.getString(cursor.getColumnIndexOrThrow(KEY_REMINDER)));
+		if(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_IMAGE_BOOLEAN)) == yesReminder) {
+			item.setImageBoolean(true);
+		} else {
+			item.setImageBoolean(false);
+		}
 		item.setImagePath(cursor.getString(cursor.getColumnIndexOrThrow(KEY_IMAGE_PATH)));
+		if(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VOICE_BOOLEAN)) == yesReminder) {
+			item.setVoiceBoolean(true);
+		} else {
+			item.setVoiceBoolean(false);
+		}
+		item.setVoicePath(cursor.getString(cursor.getColumnIndexOrThrow(KEY_VOICE_PATH)));
 		return item;
 	}
 

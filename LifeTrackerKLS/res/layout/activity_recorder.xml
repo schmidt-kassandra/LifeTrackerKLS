@@ -1,14 +1,14 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="horizontal" >
+    android:layout_height="fill_parent" >
 
     <Button
         android:id="@+id/startAndStopButton"
-        style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="159dp"
         android:text="@string/start_recording" />
 
     <Button
@@ -16,6 +16,9 @@
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/startAndStopButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="28dp"
         android:text="@string/done_recording" />
 
-</LinearLayout>
+</RelativeLayout>

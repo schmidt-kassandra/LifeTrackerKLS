@@ -5,8 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import android.util.Log;
-
 public class Item {
 	
 	private long mListID;
@@ -22,7 +20,9 @@ public class Item {
 	private Date mReminder = new Date();
 	SimpleDateFormat mDateFormat = new SimpleDateFormat("HH:mm MM dd, yyyy", Locale.getDefault());
 	private String mImagePath = null;
+	private boolean mIsImageSet = false;
 	private String mRecordingPath = null;
+	private boolean mIsVoiceSet = false;
 	
 	public Item() {
 		//Empty
@@ -137,12 +137,28 @@ public class Item {
 		return mImagePath;
 	}
 	
+	public void setImageBoolean(Boolean image) {
+		mIsImageSet = image;
+	}
+	
+	public boolean getImageBoolean() {
+		return mIsImageSet;
+	}
+	
 	public void setVoicePath(String voice) {
 		mRecordingPath = voice;
 	}
 	
 	public String getVoicePath() {
 		return mRecordingPath;
+	}
+	
+	public void setVoiceBoolean(Boolean voice) {
+		mIsVoiceSet = voice;
+	}
+	
+	public boolean getVoiceBoolean() {
+		return mIsVoiceSet;
 	}
 
 }

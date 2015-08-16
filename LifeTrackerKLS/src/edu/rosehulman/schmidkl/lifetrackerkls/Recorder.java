@@ -37,7 +37,7 @@ public class Recorder extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.dialog_recorder);
+		setContentView(R.layout.activity_recorder);
 		
 		final Button recordButton = (Button) findViewById(R.id.startAndStopButton);
 		
