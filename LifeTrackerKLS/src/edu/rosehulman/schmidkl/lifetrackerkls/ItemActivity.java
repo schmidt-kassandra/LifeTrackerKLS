@@ -736,6 +736,7 @@ public class ItemActivity extends ListActivity {
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
 				unusedRequestCode, notificationIntent,
 				PendingIntent.FLAG_UPDATE_CURRENT);
+
 		Date date = getItem(mSelectedID).getReminder();
 		long time = date.getTime();
 		AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
