@@ -41,9 +41,6 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 public class ItemActivity extends ListActivity {
-
-	// TODO: maybe change item text color based on Priority
-
 	/**
 	 * Constant to indicate that no row is selected for editing
 	 */
@@ -67,17 +64,15 @@ public class ItemActivity extends ListActivity {
 	private static final int mDeleteItemID = 2;
 
 	private static final String mLowPriority = "Low";
-	private static final String mMediumPriority = "Medium";
+	private static final String mMediumPriority = "Intermediate";
 	private static final String mHighPriority = "High";
-	
+
 	public static final String KEY_NOTIFICATION = "KEY_NOTIFICATION";
 	public static final String KEY_NOTIFICATION_ID = "KEY_NOTIFICATION_ID";
 	public static final int KEY_PICK_FROM_GALLERY_REQUEST = 2;
 	public static final String KEY_IMAGE_PATH = "KEY_IMAGE_PATH";
 	public static final int KEY_VOICE_RECORDING = 7;
 	public static final String KEY_LIST_ALARM_ID = "KEY_LIST_ALARM_ID";
-
-
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +93,43 @@ public class ItemActivity extends ListActivity {
 				cursor, fromColumns, toTextViews, 0);
 		this.setListAdapter(mCursorAdapter);
 		registerForContextMenu(getListView());
+		
+		SimpleCursorAdapter.ViewBinder binder = new SimpleCursorAdapter.ViewBinder() {
+
+			@Override
+			public boolean setViewValue(View view, Cursor cursor,
+					int columnIndex) {
+				int index = cursor
+						.getColumnIndex(ItemAdapter.KEY_PRIORITY);
+
+				String priority = cursor.getString(index);
+
+				if (priority.equals(mHighPriority)) {
+					TextView tv = (TextView) view;
+
+					tv.setTextColor(getResources().getColor(
+							R.color.high_priority));
+					tv.setText(cursor.getString(cursor.getColumnIndex(ItemAdapter.KEY_ITEM)));
+					return true;
+				} else if (priority.equals(mMediumPriority)) {
+					TextView tv = (TextView) view;
+
+					tv.setTextColor(getResources().getColor(
+							R.color.medium_priority));
+					tv.setText(cursor.getString(cursor.getColumnIndex(ItemAdapter.KEY_ITEM)));
+					return true;
+				} else if (priority.equals(mLowPriority)) {
+					TextView tv = (TextView) view;
+
+					tv.setTextColor(getResources().getColor(
+							R.color.low_priority));
+					tv.setText(cursor.getString(cursor.getColumnIndex(ItemAdapter.KEY_ITEM)));
+					return true;
+				}
+				return false;
+			}
+		};
+		mCursorAdapter.setViewBinder(binder);
 	}
 
 	@Override
@@ -309,7 +341,7 @@ public class ItemActivity extends ListActivity {
 		mCursorAdapter.changeCursor(mItemDataAdapter.getItemsCursor(mListID));
 	}
 
-	private void attributesDialog() {			
+	private void attributesDialog() {
 		DialogFragment dialogFragment = new DialogFragment() {
 			@Override
 			public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -334,9 +366,8 @@ public class ItemActivity extends ListActivity {
 				final EditText[] editTextArray = new EditText[] {
 						descriptionEditText, priceEditText, quantityEditText,
 						locationEditText, weblinkEditText };
-				
-				final Item item = getItem(mSelectedID);
 
+				final Item item = getItem(mSelectedID);
 
 				String[] attributeArray = new String[] { item.getDescription(),
 						item.getPrice(), item.getQuantity(),
@@ -468,15 +499,12 @@ public class ItemActivity extends ListActivity {
 				TextView[] textViewArray = new TextView[] {
 						descriptionTextView, priceTextView, quantityTextView,
 						locationTextView, weblinkTextView, priorityTextView };
-				
+
 				final Item item = getItem(mSelectedID);
 
-				String[] attributeArray = new String[] {
-						item.getDescription(),
-						item.getPrice(),
-						item.getQuantity(),
-						item.getLocation(),
-						item.getWebLink(),
+				String[] attributeArray = new String[] { item.getDescription(),
+						item.getPrice(), item.getQuantity(),
+						item.getLocation(), item.getWebLink(),
 						item.getPriority() };
 
 				for (int k = 0; k < textViewArray.length; k++) {
@@ -502,11 +530,9 @@ public class ItemActivity extends ListActivity {
 
 				Button imageButton = (Button) view
 						.findViewById(R.id.summaryImageButton);
-				
 
 				imageButton.setEnabled(item.getImageBoolean());
-				
-				
+
 				imageButton.setOnClickListener(new OnClickListener() {
 
 					@Override
@@ -521,7 +547,7 @@ public class ItemActivity extends ListActivity {
 
 				Button voiceButton = (Button) view
 						.findViewById(R.id.summaryVoiceButton);
-				
+
 				voiceButton.setEnabled(item.getVoiceBoolean());
 
 				voiceButton.setOnClickListener(new OnClickListener() {
@@ -616,8 +642,6 @@ public class ItemActivity extends ListActivity {
 						.findViewById(R.id.priorityMediumRadioButton);
 				final RadioButton lowPriorityButton = (RadioButton) view
 						.findViewById(R.id.priorityLowRadioButton);
-				
-				
 
 				builder.setNegativeButton(android.R.string.cancel,
 						new DialogInterface.OnClickListener() {
@@ -678,7 +702,6 @@ public class ItemActivity extends ListActivity {
 
 				timePicker.setCurrentMinute(minuteCalendar);
 				timePicker.setCurrentHour(hourCalendar);
-
 
 				builder.setNegativeButton(android.R.string.cancel,
 						new DialogInterface.OnClickListener() {
@@ -772,13 +795,13 @@ public class ItemActivity extends ListActivity {
 		if (requestCode == KEY_PICK_FROM_GALLERY_REQUEST) {
 			Uri uri = data.getData();
 			String realPath = getRealPathFromUri(uri);
-			Log.d(MainActivity.LT, "Real URI on Device " + realPath);			
+			Log.d(MainActivity.LT, "Real URI on Device " + realPath);
 			Item item = getItem(mSelectedID);
 			item.setImagePath(realPath);
 			item.setImageBoolean(true);
 			editItem(item);
 		}
-		
+
 		if (requestCode == KEY_VOICE_RECORDING) {
 			// TODO: Ask punisher about file
 			Uri uri = data.getData();
@@ -806,6 +829,6 @@ public class ItemActivity extends ListActivity {
 
 	private void voiceMessageDialog() {
 		Intent recordIntent = new Intent(this, Recorder.class);
-		startActivityForResult(recordIntent, KEY_VOICE_RECORDING );
+		startActivityForResult(recordIntent, KEY_VOICE_RECORDING);
 	}
 }

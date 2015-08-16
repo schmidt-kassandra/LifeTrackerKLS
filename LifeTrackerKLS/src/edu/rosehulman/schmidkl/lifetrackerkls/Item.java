@@ -160,5 +160,4 @@ public class Item {
 	public boolean getVoiceBoolean() {
 		return mIsVoiceSet;
 	}
-
 }

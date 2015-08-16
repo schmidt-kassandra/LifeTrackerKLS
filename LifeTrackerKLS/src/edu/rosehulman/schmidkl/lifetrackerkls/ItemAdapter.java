@@ -80,10 +80,12 @@ public class ItemAdapter {
 	public Cursor getItemsCursor(long listID) {
 		String[] projection = new String[] { KEY_ID, KEY_ITEM, KEY_LIST_ID,
 				KEY_DESCRIPTION, KEY_PRICE, KEY_QUANTITY, KEY_LOCATION,
-				KEY_WEBLINK, KEY_PRIORITY, KEY_REMINDER_BOOLEAN, KEY_REMINDER, KEY_IMAGE_BOOLEAN, KEY_IMAGE_PATH, KEY_VOICE_BOOLEAN, KEY_VOICE_PATH };
+				KEY_WEBLINK, KEY_PRIORITY, KEY_REMINDER_BOOLEAN, KEY_REMINDER,
+				KEY_IMAGE_BOOLEAN, KEY_IMAGE_PATH, KEY_VOICE_BOOLEAN,
+				KEY_VOICE_PATH };
 		String selection = KEY_LIST_ID + "=" + listID;
-		return mDatabase.query(TABLE_NAME, projection, selection, null, null, null,
-				KEY_PRIORITY + " DESC");
+		return mDatabase.query(TABLE_NAME, projection, selection, null, null,
+				null, KEY_PRIORITY + " ASC");
 	}
 
 	public long addItem(Item item) {
@@ -102,20 +104,20 @@ public class ItemAdapter {
 		row.put(KEY_QUANTITY, item.getQuantity());
 		row.put(KEY_LOCATION, item.getLocation());
 		row.put(KEY_WEBLINK, item.getWebLink());
-		row.put(KEY_PRIORITY, item.getPriority());	
-		if(item.getReminderBoolean()) {
+		row.put(KEY_PRIORITY, item.getPriority());
+		if (item.getReminderBoolean()) {
 			row.put(KEY_REMINDER_BOOLEAN, yesReminder);
 		} else {
 			row.put(KEY_REMINDER_BOOLEAN, noReminder);
-		}	
+		}
 		row.put(KEY_REMINDER, item.getReminderString());
-		if(item.getImageBoolean()) {
+		if (item.getImageBoolean()) {
 			row.put(KEY_IMAGE_BOOLEAN, yesReminder);
 		} else {
 			row.put(KEY_IMAGE_BOOLEAN, noReminder);
 		}
 		row.put(KEY_IMAGE_PATH, item.getImagePath());
-		if(item.getVoiceBoolean()) {
+		if (item.getVoiceBoolean()) {
 			row.put(KEY_VOICE_BOOLEAN, yesReminder);
 		} else {
 			row.put(KEY_VOICE_BOOLEAN, noReminder);
@@ -128,7 +130,9 @@ public class ItemAdapter {
 	public Item getItem(long ID) {
 		String[] projection = new String[] { KEY_ID, KEY_ITEM, KEY_LIST_ID,
 				KEY_DESCRIPTION, KEY_PRICE, KEY_QUANTITY, KEY_LOCATION,
-				KEY_WEBLINK, KEY_PRIORITY, KEY_REMINDER_BOOLEAN, KEY_REMINDER, KEY_IMAGE_BOOLEAN, KEY_IMAGE_PATH, KEY_VOICE_BOOLEAN, KEY_VOICE_PATH };
+				KEY_WEBLINK, KEY_PRIORITY, KEY_REMINDER_BOOLEAN, KEY_REMINDER,
+				KEY_IMAGE_BOOLEAN, KEY_IMAGE_PATH, KEY_VOICE_BOOLEAN,
+				KEY_VOICE_PATH };
 		String selection = KEY_ID + "=" + ID;
 		Cursor cursor = mDatabase.query(TABLE_NAME, projection, selection,
 				null, null, null, null);
@@ -138,34 +142,43 @@ public class ItemAdapter {
 		return null;
 	}
 
-	private Item getItemFromCursor(Cursor cursor) {	
-		Item item = new Item(cursor.getLong(cursor.getColumnIndexOrThrow(KEY_LIST_ID)));
+	private Item getItemFromCursor(Cursor cursor) {
+		Item item = new Item(cursor.getLong(cursor
+				.getColumnIndexOrThrow(KEY_LIST_ID)));
 		item.setID(cursor.getLong(cursor.getColumnIndexOrThrow(KEY_ID)));
 		item.setName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_ITEM)));
-		item.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(KEY_DESCRIPTION)));
+		item.setDescription(cursor.getString(cursor
+				.getColumnIndexOrThrow(KEY_DESCRIPTION)));
 		item.setPrice(cursor.getString(cursor.getColumnIndexOrThrow(KEY_PRICE)));
-		item.setQuantity(cursor.getString(cursor.getColumnIndexOrThrow(KEY_QUANTITY)));
-		item.setLocation(cursor.getString(cursor.getColumnIndexOrThrow(KEY_LOCATION)));
-		item.setWebLink(cursor.getString(cursor.getColumnIndexOrThrow(KEY_WEBLINK)));
-		item.setPriority(cursor.getString(cursor.getColumnIndexOrThrow(KEY_PRIORITY)));		
-		if(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_REMINDER_BOOLEAN)) == yesReminder) {
+		item.setQuantity(cursor.getString(cursor
+				.getColumnIndexOrThrow(KEY_QUANTITY)));
+		item.setLocation(cursor.getString(cursor
+				.getColumnIndexOrThrow(KEY_LOCATION)));
+		item.setWebLink(cursor.getString(cursor
+				.getColumnIndexOrThrow(KEY_WEBLINK)));
+		item.setPriority(cursor.getString(cursor
+				.getColumnIndexOrThrow(KEY_PRIORITY)));
+		if (cursor.getInt(cursor.getColumnIndexOrThrow(KEY_REMINDER_BOOLEAN)) == yesReminder) {
 			item.setReminderBoolean(true);
 		} else {
 			item.setReminderBoolean(false);
 		}
-		item.setReminder(cursor.getString(cursor.getColumnIndexOrThrow(KEY_REMINDER)));
-		if(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_IMAGE_BOOLEAN)) == yesReminder) {
+		item.setReminder(cursor.getString(cursor
+				.getColumnIndexOrThrow(KEY_REMINDER)));
+		if (cursor.getInt(cursor.getColumnIndexOrThrow(KEY_IMAGE_BOOLEAN)) == yesReminder) {
 			item.setImageBoolean(true);
 		} else {
 			item.setImageBoolean(false);
 		}
-		item.setImagePath(cursor.getString(cursor.getColumnIndexOrThrow(KEY_IMAGE_PATH)));
-		if(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VOICE_BOOLEAN)) == yesReminder) {
+		item.setImagePath(cursor.getString(cursor
+				.getColumnIndexOrThrow(KEY_IMAGE_PATH)));
+		if (cursor.getInt(cursor.getColumnIndexOrThrow(KEY_VOICE_BOOLEAN)) == yesReminder) {
 			item.setVoiceBoolean(true);
 		} else {
 			item.setVoiceBoolean(false);
 		}
-		item.setVoicePath(cursor.getString(cursor.getColumnIndexOrThrow(KEY_VOICE_PATH)));
+		item.setVoicePath(cursor.getString(cursor
+				.getColumnIndexOrThrow(KEY_VOICE_PATH)));
 		return item;
 	}
 

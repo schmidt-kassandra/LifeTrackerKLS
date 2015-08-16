@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="text">#94FFFF</color>
+    <color name="high_priority">#FF0000</color>
+    <color name="medium_priority">#FFFF66</color>
+    <color name="low_priority">#66FF66</color>
     
 </resources>

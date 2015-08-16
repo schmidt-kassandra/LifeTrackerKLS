@@ -68,7 +68,6 @@ public class Recorder extends Activity {
 			}
 		});
 		
-
 //		LinearLayout ll = new LinearLayout(getActivity());
 //		mRecordButton = new RecordButton(getActivity().getApplicationContext());
 //		ll.addView(mRecordButton, new LinearLayout.LayoutParams(
