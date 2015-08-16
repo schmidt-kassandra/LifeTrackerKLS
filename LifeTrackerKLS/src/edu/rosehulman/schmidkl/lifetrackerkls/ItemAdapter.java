@@ -105,6 +105,7 @@ public class ItemAdapter {
 		}	
 		row.put(KEY_REMINDER, item.getReminderString());
 		row.put(KEY_IMAGE_PATH, item.getImagePath());
+		Log.d(MainActivity.LT, "IA 108" + item.getVoicePath());
 		return row;
 	}
 

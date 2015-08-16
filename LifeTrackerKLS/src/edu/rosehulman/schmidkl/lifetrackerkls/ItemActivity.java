@@ -61,6 +61,7 @@ public class ItemActivity extends ListActivity {
 	private ItemAdapter mItemDataAdapter;
 	private SimpleCursorAdapter mCursorAdapter;
 
+
 	private static final int mGroupNumber = 0;
 
 	private static final int mEditItemID = 1;
@@ -73,6 +74,8 @@ public class ItemActivity extends ListActivity {
 	public static final String KEY_NOTIFICATION_ID = "KEY_NOTIFICATION_ID";
 	public static final int KEY_PICK_FROM_GALLERY_REQUEST = 2;
 	public static final String KEY_IMAGE_PATH = "KEY_IMAGE_PATH";
+	public static final int KEY_VOICE_RECORDING = 7;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -187,7 +190,7 @@ public class ItemActivity extends ListActivity {
 								item.setName(name);
 								addItem(item);
 								mSelectedID = item.getID();
-								attributesDialog(item);
+								attributesDialog();
 								dismiss();
 							}
 						});
@@ -304,7 +307,7 @@ public class ItemActivity extends ListActivity {
 		mCursorAdapter.changeCursor(mItemDataAdapter.getItemsCursor(mListID));
 	}
 
-	private void attributesDialog(final Item item) {
+	private void attributesDialog() {			
 		DialogFragment dialogFragment = new DialogFragment() {
 			@Override
 			public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -329,6 +332,9 @@ public class ItemActivity extends ListActivity {
 				final EditText[] editTextArray = new EditText[] {
 						descriptionEditText, priceEditText, quantityEditText,
 						locationEditText, weblinkEditText };
+				
+				final Item item = getItem(mSelectedID);
+
 
 				String[] attributeArray = new String[] { item.getDescription(),
 						item.getPrice(), item.getQuantity(),
@@ -346,7 +352,7 @@ public class ItemActivity extends ListActivity {
 
 					@Override
 					public void onClick(View v) {
-						priorityDialog(item);
+						priorityDialog();
 					}
 				});
 
@@ -356,7 +362,7 @@ public class ItemActivity extends ListActivity {
 
 					@Override
 					public void onClick(View v) {
-						reminderDialog(item);
+						reminderDialog();
 					}
 				});
 
@@ -366,7 +372,7 @@ public class ItemActivity extends ListActivity {
 
 					@Override
 					public void onClick(View v) {
-						imageSet(item);
+						imageSet();
 					}
 				});
 
@@ -376,7 +382,6 @@ public class ItemActivity extends ListActivity {
 
 					@Override
 					public void onClick(View v) {
-						// TODO:
 						voiceMessageDialog();
 					}
 				});
@@ -387,10 +392,6 @@ public class ItemActivity extends ListActivity {
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which) {
-								// TODO:maybe
-
-								// long itemID = item.getID();
-								// removeItem(itemID);
 								dismiss();
 							}
 						});
@@ -401,6 +402,8 @@ public class ItemActivity extends ListActivity {
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which) {
+								Item item = getItem(mSelectedID);
+
 								String attribute;
 								String[] attributes = new String[5];
 
@@ -463,14 +466,16 @@ public class ItemActivity extends ListActivity {
 				TextView[] textViewArray = new TextView[] {
 						descriptionTextView, priceTextView, quantityTextView,
 						locationTextView, weblinkTextView, priorityTextView };
+				
+				Item item = getItem(mSelectedID);
 
 				String[] attributeArray = new String[] {
-						getItem(mSelectedID).getDescription(),
-						getItem(mSelectedID).getPrice(),
-						getItem(mSelectedID).getQuantity(),
-						getItem(mSelectedID).getLocation(),
-						getItem(mSelectedID).getWebLink(),
-						getItem(mSelectedID).getPriority() };
+						item.getDescription(),
+						item.getPrice(),
+						item.getQuantity(),
+						item.getLocation(),
+						item.getWebLink(),
+						item.getPriority() };
 
 				for (int k = 0; k < textViewArray.length; k++) {
 					if (attributeArray[k] != null) {
@@ -478,8 +483,8 @@ public class ItemActivity extends ListActivity {
 					}
 				}
 
-				if (getItem(mSelectedID).getReminderBoolean()) {
-					Date date = getItem(mSelectedID).getReminder();
+				if (item.getReminderBoolean()) {
+					Date date = item.getReminder();
 
 					SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm",
 							Locale.getDefault());
@@ -492,16 +497,81 @@ public class ItemActivity extends ListActivity {
 					reminderTimeTextView.setText(timePart);
 					reminderDateTextView.setText(datePart);
 				}
-				
-				Button imageButton = (Button) view.findViewById(R.id.summaryImageButton);
-				
+
+				Button imageButton = (Button) view
+						.findViewById(R.id.summaryImageButton);
+
 				imageButton.setOnClickListener(new OnClickListener() {
-					
+
 					@Override
 					public void onClick(View v) {
-						Intent imageIntent = new Intent(getActivity(), ImageActivity.class);
-						imageIntent.putExtra(KEY_IMAGE_PATH, getItem(mSelectedID).getImagePath());
+						Intent imageIntent = new Intent(getActivity(),
+								ImageActivity.class);
+						imageIntent.putExtra(KEY_IMAGE_PATH,
+								getItem(mSelectedID).getImagePath());
 						getActivity().startActivity(imageIntent);
+					}
+				});
+
+				Button voiceButton = (Button) view
+						.findViewById(R.id.summaryVoiceButton);
+
+				voiceButton.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						// TODO
+						// class PlayButton extends Button {
+						// boolean mStartPlaying = true;
+						//
+						// OnClickListener clicker = new OnClickListener() {
+						// public void onClick(View v) {
+						// onPlay(mStartPlaying);
+						// if (mStartPlaying) {
+						// setText("Stop playing");
+						// } else {
+						// setText("Start playing");
+						// }
+						// mStartPlaying = !mStartPlaying;
+						// }
+						// };
+						//
+						// public PlayButton(Context ctx) {
+						// super(ctx);
+						// setText("Start playing");
+						// setOnClickListener(clicker);
+						// }
+						// }
+						//
+						//
+						//
+						//
+						//
+						// private void onPlay(boolean start) {
+						// if (start) {
+						// startPlaying();
+						// } else {
+						// stopPlaying();
+						// }
+						// }
+						//
+						// private void startPlaying() {
+						// mPlayer = new MediaPlayer();
+						// try {
+						// mPlayer.setDataSource(mFileName);
+						// mPlayer.prepare();
+						// mPlayer.start();
+						// } catch (IOException e) {
+						// Log.e(MainActivity.LT, "prepare() failed");
+						// }
+						// }
+						//
+						//
+						// private void stopPlaying() {
+						// mPlayer.release();
+						// mPlayer = null;
+						// }
+
 					}
 				});
 
@@ -511,7 +581,7 @@ public class ItemActivity extends ListActivity {
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which) {
-								attributesDialog(getItem(mSelectedID));
+								attributesDialog();
 								dismiss();
 							}
 						});
@@ -521,7 +591,7 @@ public class ItemActivity extends ListActivity {
 		dialogFragment.show(getFragmentManager(), null);
 	}
 
-	private void priorityDialog(final Item item) {
+	private void priorityDialog() {
 		DialogFragment dialogFragment = new DialogFragment() {
 			@Override
 			public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -538,6 +608,8 @@ public class ItemActivity extends ListActivity {
 						.findViewById(R.id.priorityMediumRadioButton);
 				final RadioButton lowPriorityButton = (RadioButton) view
 						.findViewById(R.id.priorityLowRadioButton);
+				
+				
 
 				builder.setNegativeButton(android.R.string.cancel,
 						new DialogInterface.OnClickListener() {
@@ -554,6 +626,7 @@ public class ItemActivity extends ListActivity {
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which) {
+								Item item = getItem(mSelectedID);
 								if (highPriorityButton.isChecked()) {
 									item.setPriority(mHighPriority);
 								} else if (mediumPriorityButton.isChecked()) {
@@ -571,7 +644,7 @@ public class ItemActivity extends ListActivity {
 		dialogFragment.show(getFragmentManager(), null);
 	}
 
-	private void reminderDialog(final Item item) {
+	private void reminderDialog() {
 		DialogFragment dialogFragment = new DialogFragment() {
 			@Override
 			public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -598,6 +671,7 @@ public class ItemActivity extends ListActivity {
 				timePicker.setCurrentMinute(minuteCalendar);
 				timePicker.setCurrentHour(hourCalendar);
 
+
 				builder.setNegativeButton(android.R.string.cancel,
 						new DialogInterface.OnClickListener() {
 
@@ -613,6 +687,7 @@ public class ItemActivity extends ListActivity {
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which) {
+								Item item = getItem(mSelectedID);
 								int minute = timePicker.getCurrentMinute();
 								int hour = timePicker.getCurrentHour();
 								int day = datePicker.getDayOfMonth();
@@ -649,7 +724,7 @@ public class ItemActivity extends ListActivity {
 				PendingIntent.FLAG_UPDATE_CURRENT);
 
 		Date date = getItem(mSelectedID).getReminder();
-		//TODO: Does not go off when scheduled
+		// TODO: Does not go off when scheduled
 		long time = SystemClock.elapsedRealtime() + date.getTime() + 15 * 1000;
 		// long time = SystemClock.elapsedRealtime() + 15*1000;
 		Log.d("LT", "Set Time " + time);
@@ -673,10 +748,10 @@ public class ItemActivity extends ListActivity {
 		return builder.build();
 	}
 
-	private void imageSet(Item item) {
+	private void imageSet() {
 		Intent galleryIntent = new Intent(Intent.ACTION_PICK,
-				MediaStore.Images.Media.EXTERNAL_CONTENT_URI);			
-		
+				MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
 		this.startActivityForResult(galleryIntent,
 				KEY_PICK_FROM_GALLERY_REQUEST);
 	}
@@ -689,10 +764,20 @@ public class ItemActivity extends ListActivity {
 		if (requestCode == KEY_PICK_FROM_GALLERY_REQUEST) {
 			Uri uri = data.getData();
 			String realPath = getRealPathFromUri(uri);
+			Log.d(MainActivity.LT, "Real URI on Device " + realPath);			
+			Item item = getItem(mSelectedID);
+			item.setImagePath(realPath);
+			editItem(item);
+		}
+		
+		if (requestCode == KEY_VOICE_RECORDING) {
+			Uri uri = data.getData();
+			String realPath = getRealPathFromUri(uri);
 			Log.d(MainActivity.LT, "Real URI on Device" + realPath);
-			//TODO: Won't save imagePath		
-			getItem(mSelectedID).setImagePath(realPath);
-			editItem(getItem(mSelectedID));
+			// TODO: Won't save voicePath, maybe
+			Item item = getItem(mSelectedID);
+			item.setVoicePath(realPath);
+			editItem(item);
 		}
 	}
 
@@ -708,10 +793,10 @@ public class ItemActivity extends ListActivity {
 				.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
 		return cursor.getString(columnIndex);
 	}
-	
-	private void voiceMessageDialog() {
-		
-	}
 
+	private void voiceMessageDialog() {
+		Intent recordIntent = new Intent(this, Recorder.class);
+		startActivityForResult(recordIntent, KEY_VOICE_RECORDING );
+	}
 
 }

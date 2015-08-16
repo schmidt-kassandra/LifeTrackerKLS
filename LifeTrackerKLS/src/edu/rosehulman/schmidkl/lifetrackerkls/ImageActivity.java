@@ -1,5 +1,6 @@
 package edu.rosehulman.schmidkl.lifetrackerkls;
 
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;

@@ -9,6 +9,8 @@
         android:targetSdkVersion="22" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -32,8 +34,12 @@
             android:name=".ItemActivity"
             android:theme="@android:style/Theme.Holo" >
         </activity>
-                <activity
+        <activity
             android:name=".ImageActivity"
+            android:theme="@android:style/Theme.Holo" >
+        </activity>
+        <activity
+            android:name=".Recorder"
             android:theme="@android:style/Theme.Holo" >
         </activity>
 

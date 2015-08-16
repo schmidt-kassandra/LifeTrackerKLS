@@ -22,6 +22,7 @@ public class Item {
 	private Date mReminder = new Date();
 	SimpleDateFormat mDateFormat = new SimpleDateFormat("HH:mm MM dd, yyyy", Locale.getDefault());
 	private String mImagePath = null;
+	private String mRecordingPath = null;
 	
 	public Item() {
 		//Empty
@@ -128,13 +129,20 @@ public class Item {
 		return mIsReminderSet;
 	}
 	
-	public void setImagePath(String path) {
-		mImagePath = path;
+	public void setImagePath(String image) {
+		mImagePath = image;
 	}
 	
 	public String getImagePath() {
 		return mImagePath;
 	}
 	
+	public void setVoicePath(String voice) {
+		mRecordingPath = voice;
+	}
+	
+	public String getVoicePath() {
+		return mRecordingPath;
+	}
 
 }
