@@ -1,5 +1,6 @@
 package edu.rosehulman.schmidkl.lifetrackerkls;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -22,7 +23,6 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -311,6 +311,10 @@ public class ItemActivity extends ListActivity {
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which) {
+								String voicePath = getItem(mSelectedID)
+										.getVoicePath();
+								File file = new File(voicePath);
+								boolean deleted = file.delete();
 								removeItem(mSelectedID);
 								dismiss();
 							}
@@ -732,17 +736,10 @@ public class ItemActivity extends ListActivity {
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
 				unusedRequestCode, notificationIntent,
 				PendingIntent.FLAG_UPDATE_CURRENT);
-
 		Date date = getItem(mSelectedID).getReminder();
-		// TODO: Does not go off when scheduled; Look at Dr. Boutell's email
-		long time = SystemClock.elapsedRealtime() + date.getTime() + 15 * 1000;
-		// long time = SystemClock.elapsedRealtime() + 15*1000;
-		Log.d("LT", "Set Time " + time);
-		// long time = date.getTime();
-		// long time = SystemClock.
+		long time = date.getTime();
 		AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-		alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, time,
-				pendingIntent);
+		alarmManager.set(AlarmManager.RTC_WAKEUP, time, pendingIntent);
 	}
 
 	private Notification getNotification(Intent intent) {
@@ -750,6 +747,10 @@ public class ItemActivity extends ListActivity {
 		builder.setContentTitle(getString(R.string.notification_title));
 		builder.setContentText(getItem(mSelectedID).getName());
 		builder.setSmallIcon(R.drawable.ic_launcher);
+		
+		long time = getItem(mSelectedID).getReminder().getTime();
+		
+		builder.setWhen(time);
 
 		int unusedRequestCode = 0; // arbitrary
 		PendingIntent pendingIntent = PendingIntent.getActivity(this,
@@ -784,7 +785,6 @@ public class ItemActivity extends ListActivity {
 
 			String realPath = (String) recorderData
 					.get(Recorder.KEY_VOICE_PATH);
-			Log.d(MainActivity.LT, "Real URI on Device " + realPath);
 			Item item = getItem(mSelectedID);
 			item.setVoicePath(realPath);
 			item.setVoiceBoolean(true);

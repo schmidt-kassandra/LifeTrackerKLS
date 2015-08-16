@@ -123,7 +123,6 @@ public class ItemAdapter {
 			row.put(KEY_VOICE_BOOLEAN, noReminder);
 		}
 		row.put(KEY_VOICE_PATH, item.getVoicePath());
-		Log.d(MainActivity.LT, "IA 108" + item.getVoicePath());
 		return row;
 	}
 
