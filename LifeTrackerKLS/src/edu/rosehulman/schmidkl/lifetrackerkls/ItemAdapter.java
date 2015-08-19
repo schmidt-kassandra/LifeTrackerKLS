@@ -7,6 +7,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+/**
+ * 
+ * @author schmidkl
+ * SQLite Database where all of the item info is stored.
+ */
+
 public class ItemAdapter {
 	// Becomes the filename of the database
 	private static final String DATABASE_NAME = "items.db";
@@ -58,6 +64,9 @@ public class ItemAdapter {
 		sb.append(")");
 		CREATE_STATEMENT = sb.toString();
 	}
+	
+	//Booleans cannot be stored in an SQLIte database, so representing them as
+	// a zero or one is generally common practice
 
 	private SQLiteOpenHelper mOpenHelper;
 	private SQLiteDatabase mDatabase;

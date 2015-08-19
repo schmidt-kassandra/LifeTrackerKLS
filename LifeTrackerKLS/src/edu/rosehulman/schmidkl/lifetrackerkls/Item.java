@@ -5,6 +5,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ * 
+ * @author schmidkl
+ * Item Model Class with getters and setters for the item Attributes
+ *
+ */
+
 public class Item {
 	
 	private long mListID;

@@ -6,6 +6,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+/**
+ * 
+ * @author schmidkl
+ *  Broadcast Receiver which sends a notification to the device when
+ *  the Alarmmanager goes off
+ *
+ */
+
 public class ReminderBroadcastReceiver extends BroadcastReceiver {
 
 	public ReminderBroadcastReceiver() {

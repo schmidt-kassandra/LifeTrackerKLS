@@ -21,6 +21,13 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
+/**
+ * 
+ * @author schmidkl
+ *	The Main Activity where lists are created and interacted with. 
+ *
+ */
+
 public class MainActivity extends ListActivity {
 
 	public static final String LT = "LT";
@@ -247,6 +254,8 @@ public class MainActivity extends ListActivity {
 		};
 		dialogFragment.show(getFragmentManager(), null);
 	}
+	
+	// CRUD methods for the ListAdapter
 
 	private void addList(List list) {
 		mListDataAdapter.addList(list);

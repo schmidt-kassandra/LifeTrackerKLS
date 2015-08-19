@@ -42,6 +42,13 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+/**
+ * 
+ * @author schmidkl
+ *  Activity in which all item interaction and navigation occurs
+ *
+ */
+
 public class ItemActivity extends ListActivity {
 	/**
 	 * Constant to indicate that no row is selected for editing
@@ -83,7 +90,7 @@ public class ItemActivity extends ListActivity {
 		setContentView(R.layout.activity_item_list);
 
 		Intent data = getIntent();
-
+		
 		mListID = data.getLongExtra(MainActivity.KEY_LIST_ID, 0);
 
 		mItemDataAdapter = new ItemAdapter(this);
@@ -96,7 +103,9 @@ public class ItemActivity extends ListActivity {
 				cursor, fromColumns, toTextViews, 0);
 		this.setListAdapter(mCursorAdapter);
 		registerForContextMenu(getListView());
-
+		
+		// The ViewBinder can changes the appearance of the data in a view. In this case, 
+		// it is used to changed the color of the item text based upon its priority.
 		SimpleCursorAdapter.ViewBinder binder = new SimpleCursorAdapter.ViewBinder() {
 
 			@Override
@@ -104,6 +113,9 @@ public class ItemActivity extends ListActivity {
 					int columnIndex) {
 				int index = cursor.getColumnIndex(ItemAdapter.KEY_PRIORITY);
 				String priority = cursor.getString(index);
+				
+				//TextView must be defined inside of the IF statement or all of the view
+				// are affected
 
 				if (priority.equals(mHighPriority)) {
 					TextView tv = (TextView) view;
@@ -223,6 +235,8 @@ public class ItemActivity extends ListActivity {
 							public void onClick(DialogInterface dialog,
 									int which) {
 								String name = nameEditText.getText().toString();
+								//Using the List ID helps make sure each item is 
+								// unique to the list it was created in
 								Item item = new Item(mListID);
 								item.setName(name);
 								addItem(item);
@@ -311,6 +325,8 @@ public class ItemActivity extends ListActivity {
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which) {
+								// Make sure to delete the voice file (if there is
+								// one) as to not clutter up the phone
 								String voicePath = getItem(mSelectedID)
 										.getVoicePath();
 								File file = new File(voicePath);
@@ -324,6 +340,8 @@ public class ItemActivity extends ListActivity {
 		};
 		dialogFragment.show(getFragmentManager(), null);
 	}
+	
+	// Item CRUD methods
 
 	private void addItem(Item item) {
 		mItemDataAdapter.addItem(item);
@@ -422,7 +440,7 @@ public class ItemActivity extends ListActivity {
 
 					@Override
 					public void onClick(View v) {
-						voiceMessageDialog();
+						voiceMessage();
 					}
 				});
 
@@ -520,7 +538,8 @@ public class ItemActivity extends ListActivity {
 
 				if (item.getReminderBoolean()) {
 					Date date = item.getReminder();
-
+					
+					// Allows me to format Date info however I want
 					SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm",
 							Locale.getDefault());
 					SimpleDateFormat dateFormat = new SimpleDateFormat(
@@ -563,7 +582,6 @@ public class ItemActivity extends ListActivity {
 						onPlay(mStartPlaying);
 						mStartPlaying = !mStartPlaying;
 					}
-
 				});
 
 				builder.setNeutralButton(R.string.edit,
@@ -673,7 +691,10 @@ public class ItemActivity extends ListActivity {
 						.findViewById(R.id.timePicker);
 				final DatePicker datePicker = (DatePicker) view
 						.findViewById(R.id.datePicker);
-
+				
+				// Removes the calendar that is automatically added in the
+				// datePickerDialog. The calendar doesn't exist before API 11, hence
+				// the choosing of that SDK version.
 				if (Build.VERSION.SDK_INT >= 11) {
 					datePicker.setCalendarViewShown(false);
 				}
@@ -783,7 +804,6 @@ public class ItemActivity extends ListActivity {
 
 		if (requestCode == KEY_VOICE_RECORDING) {
 			Bundle recorderData = data.getExtras();
-
 			String realPath = (String) recorderData
 					.get(Recorder.KEY_VOICE_PATH);
 			Item item = getItem(mSelectedID);
@@ -806,7 +826,7 @@ public class ItemActivity extends ListActivity {
 		return cursor.getString(columnIndex);
 	}
 
-	private void voiceMessageDialog() {
+	private void voiceMessage() {
 		Intent recordIntent = new Intent(this, Recorder.class);
 		recordIntent.putExtra(KEY_LIST_ID, mListID);
 		recordIntent.putExtra(KEY_VOICE_ITEM_ID, mSelectedID);

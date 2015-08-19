@@ -1,5 +1,12 @@
 package edu.rosehulman.schmidkl.lifetrackerkls;
 
+/**
+ * 
+ * @author schmidkl
+ * List Model Class
+ *
+ */
+
 public class List {
 	
 	private String mName;

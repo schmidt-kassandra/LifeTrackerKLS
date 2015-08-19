@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Environment;
@@ -13,17 +12,19 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
+/**
+ * 
+ * @author schmidkl
+ * Allows for the recording and saving of voice messages using a custom 
+ * file name and a Media Recorder
+ * 
+ */
+
+
 public class Recorder extends Activity {
 
-//	private static final String LOG_TAG = "AudioRecordTest";
 	private static String mFilePath = null;
-
-//	private RecordButton mRecordButton = null;
-	private MediaRecorder mRecorder = null;
-
-//	private PlayButton mPlayButton = null;
-	private MediaPlayer mPlayer = null;
-	
+	private MediaRecorder mRecorder = null;	
 	boolean mStartRecording = true;
 	
 	public static final String KEY_VOICE_PATH = "KEY_VOICE_PATH";
@@ -98,19 +99,5 @@ public class Recorder extends Activity {
 		mRecorder.stop();
 		mRecorder.release();
 		mRecorder = null;
-	}
-	
-	@Override
-	public void onPause() {
-		super.onPause();
-		if (mRecorder != null) {
-			mRecorder.release();
-			mRecorder = null;
-		}
-
-		if (mPlayer != null) {
-			mPlayer.release();
-			mPlayer = null;
-		}
 	}
 }

@@ -7,6 +7,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+/**
+ * 
+ * @author schmidkl
+ *	SQLite Database where all of the list info is stored
+ *
+ */
+
 public class ListAdapter {
 	// Becomes the filename of the database
 	private static final String DATABASE_NAME = "lists.db";
